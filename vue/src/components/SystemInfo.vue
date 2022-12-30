@@ -1,0 +1,242 @@
+<template>
+    <!-- Btn Section -->
+    <div style="padding: 10px 0">
+        <el-input style="width: 200px" placeholder="Please input username" suffix-icon="el-icon-search" v-model="username" />
+        <el-input style="width: 200px" placeholder="Please input email" suffix-icon="el-icon-message" class="ml-5" />
+        <el-input style="width: 200px" placeholder="Please input address" suffix-icon="el-icon-position" class="ml-5" />
+        <el-button class="ml-5" type="primary" @click="load">Searching</el-button>
+        <el-button type="primary" @click="reset">Reset</el-button>
+    </div>
+
+    <div style="padding: 10px">
+        <el-button type="primary" @click="doAdd">Add</el-button>
+        <!-- confirm 点击确定按钮触发 delBatch事件 -->
+        <el-upload action="https://localhost:9090/user/import" :show-file-list="false" accept=".xlsx"
+            style="display: inline-block">
+            <el-button type="primary" class="ml-5">import</el-button>
+        </el-upload>
+        <el-button type="primary" class="ml-5">Export</el-button>
+    </div>
+
+    <!-- Add Pop Form-->
+    <el-dialog v-model="addDialogForm" title="Form" width="50%" center>
+        <el-form  label-width="100px" :model="addForm" 
+            style="max-width: 460px">
+            <el-form-item label="Username">
+                <el-input v-model="addForm.username" />
+            </el-form-item>
+            <el-form-item label="Nickname">
+                <el-input v-model="addForm.nickname" />
+            </el-form-item>
+            <el-form-item label="Email">
+                <el-input v-model="addForm.email" />
+            </el-form-item>
+            <el-form-item label="Phone">
+                <el-input v-model="addForm.phone" />
+            </el-form-item>
+            <el-form-item label="Address">
+                <el-input v-model="addForm.address" />
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="addDialogForm = false">Cancel</el-button>
+                <el-button type="primary" @click="addUser">
+                    Confirm
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
+
+    <!-- Data Table -->
+    <el-scrollbar>
+        <el-table :data="tableData">
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="id" label="ID" width="140" />
+            <el-table-column prop="username" label="Username" width="100" />
+            <el-table-column prop="nickname" label="Nickname" width="140" />
+            <el-table-column prop="email" label="Email" width="140" />
+            <el-table-column prop="phone" label="Phone" width="120" />
+            <el-table-column prop="address" label="Address" />
+            <el-table-column label="Option">
+                <template #default="scope">
+                    <el-button type="primary" @click="edit(scope.row.id)">Edit</el-button>
+                    <el-button type="danger" @click="doDelete(scope.row.id)">Delete</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <!-- Pagination -->
+        <div class="demo-pagination-block" id="pagination">
+            <el-pagination v-model:current-page="currentPage"  v-model:page-size="pageSize"
+                :page-sizes="[5, 10, 20]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+                @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+        </div>
+
+        <!-- Edit Pop Form -->
+        <el-dialog v-model="editDialogForm" title="Form" width="50%" center>
+            <el-form  label-width="100px" :model="form" 
+                style="max-width: 460px">
+                <el-form-item label="Username">
+                    <el-input v-model="editForm.username" />
+                </el-form-item>
+                <el-form-item label="Nickname">
+                    <el-input v-model="editForm.nickname" />
+                </el-form-item>
+                <el-form-item label="Email">
+                    <el-input v-model="editForm.email" />
+                </el-form-item>
+                <el-form-item label="Phone">
+                    <el-input v-model="editForm.phone" />
+                </el-form-item>
+                <el-form-item label="Address">
+                    <el-input v-model="editForm.address" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="editDialogForm = false">Cancel</el-button>
+                    <el-button type="primary" @click="updateForm">
+                        Confirm
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </el-scrollbar>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted, inject } from "vue";
+import { ElMessage } from 'element-plus'
+import { parse } from "@vue/compiler-dom";
+
+const $axios = inject('$axios')
+const username = ref('')
+const currentPage = ref(1)
+const pageSize = ref(5)
+const tableData = ref(null)
+const total = ref(25)
+// DO NOT Pop up Form 
+const editDialogForm = ref(false)
+const addDialogForm = ref(false)
+
+const editForm = reactive({
+    username: '',
+    nickname: '',
+    email: '',
+    phone: '',
+    address: '',
+})
+
+const addForm = reactive({
+    username: '',
+    nickname: '',
+    email: '',
+    phone: '',
+    address: '',
+})
+
+const handleSizeChange = val => {
+    console.log(`${val} items per page`)
+    $axios.get('/api/user/page', {params: {pageNum: currentPage.value, pageSize: val}}).then(res => {
+        tableData.value = res.data
+    })
+    pageSize.value = val
+}
+
+const handleCurrentChange = val => {
+    console.log(`current page: ${val}`)
+    $axios.get('/api/user/page', {params: {pageNum: val, pageSize: pageSize.value}}).then(res => {
+        tableData.value = res.data
+    })
+}
+
+
+onMounted(() => {
+    load();
+})
+
+const load = () => {
+    $axios.get('/api/user/page', {params: {pageNum: currentPage.value, pageSize: pageSize.value, username: username.value}}).then(res => {
+        console.log(res);
+        tableData.value = res.data
+        total.value = res.total
+    }).catch(err => console.log(err))
+}
+
+const reset = () => {
+    username.value = ''
+    load();
+}
+
+const doAdd = () => {
+    addDialogForm.value = true
+    console.log("ADDDDDDDDDDDDDDDDDDDDDDDD");
+}
+
+const addUser = () => {
+    console.log("ADDDDDUSERRRRRRRRRRRRRRRRRRR");
+    console.log(JSON.stringify(editForm));
+    $axios.post('/api/user', JSON.stringify(editForm)).then(res => {
+        console.log(res);
+    }).catch(err => console.log(err))
+}
+
+const edit = (id) => {
+    editDialogForm.value = true
+    editForm.username = tableData.value[id].username
+    editForm.email = tableData.value[id].email
+    editForm.phone = tableData.value[id].phone
+    editForm.nickname = tableData.value[id].nickname
+    editForm.address = tableData.value[id].address
+}
+
+const validate = () => {
+    editForm.forEach(element => {
+        if (element === '') {
+            return false
+        }
+    });
+}
+
+
+const updateForm = () => {
+    if (!validate) {
+        return false
+    }
+    editDialogForm.value = false
+    $axios.patch('/api/user/' + id).then(res => {
+        load();
+        ElMessage({
+            message: '编辑成功',
+            type: 'success',
+        })
+    })
+}
+
+const doDelete = (id) => {
+    $axios.delete('/api/user/' + id).then(res => {
+        load();
+        ElMessage({
+            message: '删除成功',
+            type: 'success',
+        })
+    })
+}
+
+
+</script>
+
+<style>
+.el-main {
+    position: relative;
+}
+
+#pagination {
+    margin-top: 5px;
+}
+
+.ml-5 {
+    margin-left: 5px;
+}
+</style>
