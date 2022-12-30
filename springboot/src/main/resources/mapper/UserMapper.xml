@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace指向mapper.xml所对应的Mapper接口-->
+<!--不建议直接修改password-->
+<mapper namespace="com.example.springboot_restful.mapper.UserMapper">
+    <update id="update">
+        update sys_user
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="username != null">
+                nickname = #{nickname},
+            </if>
+            <if test="username != null">
+                email = #{email},
+            </if>
+            <if test="username != null">
+                phone = #{phone},
+            </if>
+            <if test="username != null">
+                address = #{address}
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+
+    </update>
+</mapper>
