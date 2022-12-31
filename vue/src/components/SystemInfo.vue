@@ -2,8 +2,8 @@
     <!-- Btn Section -->
     <div style="padding: 10px 0">
         <el-input style="width: 200px" placeholder="Please input username" suffix-icon="el-icon-search" v-model="username" />
-        <el-input style="width: 200px" placeholder="Please input email" suffix-icon="el-icon-message" class="ml-5" />
-        <el-input style="width: 200px" placeholder="Please input address" suffix-icon="el-icon-position" class="ml-5" />
+        <el-input style="width: 200px" placeholder="Please input email" suffix-icon="el-icon-message" class="ml-5" v-model="email" />
+        <el-input style="width: 200px" placeholder="Please input address" suffix-icon="el-icon-position" v-model="address" class="ml-5" />
         <el-button class="ml-5" type="primary" @click="load">Searching</el-button>
         <el-button type="primary" @click="reset">Reset</el-button>
     </div>
@@ -19,7 +19,7 @@
     </div>
 
     <!-- Add Pop Form-->
-    <el-dialog v-model="addDialogForm" title="Form" width="50%" center>
+    <el-dialog v-model="addDialogForm" title="Form" width="30%" center>
         <el-form  label-width="100px" :model="addForm" 
             style="max-width: 460px">
             <el-form-item label="Username">
@@ -52,7 +52,7 @@
     <el-scrollbar>
         <el-table :data="tableData">
             <el-table-column type="selection" width="55" />
-            <el-table-column prop="id" label="ID" width="140" />
+            <el-table-column type="index" prop="id" label="ID" width="50" />
             <el-table-column prop="username" label="Username" width="100" />
             <el-table-column prop="nickname" label="Nickname" width="140" />
             <el-table-column prop="email" label="Email" width="140" />
@@ -60,7 +60,7 @@
             <el-table-column prop="address" label="Address" />
             <el-table-column label="Option">
                 <template #default="scope">
-                    <el-button type="primary" @click="edit(scope.row.id)">Edit</el-button>
+                    <el-button type="primary" @click="edit(scope.row)">Edit</el-button>
                     <el-button type="danger" @click="doDelete(scope.row.id)">Delete</el-button>
                 </template>
             </el-table-column>
@@ -75,7 +75,7 @@
 
         <!-- Edit Pop Form -->
         <el-dialog v-model="editDialogForm" title="Form" width="50%" center>
-            <el-form  label-width="100px" :model="form" 
+            <el-form  label-width="100px" 
                 style="max-width: 460px">
                 <el-form-item label="Username">
                     <el-input v-model="editForm.username" />
@@ -112,9 +112,12 @@ import { parse } from "@vue/compiler-dom";
 
 const $axios = inject('$axios')
 const username = ref('')
+const email = ref('')
+const address = ref('')
 const currentPage = ref(1)
 const pageSize = ref(5)
 const tableData = ref(null)
+const allTableData = ref(null)
 const total = ref(25)
 // DO NOT Pop up Form 
 const editDialogForm = ref(false)
@@ -138,7 +141,7 @@ const addForm = reactive({
 
 const handleSizeChange = val => {
     console.log(`${val} items per page`)
-    $axios.get('/api/user/page', {params: {pageNum: currentPage.value, pageSize: val}}).then(res => {
+    $axios.get('/api/user/page', {params: {pageNum: currentPage.value, pageSize: val, is_delete: 0}}).then(res => {
         tableData.value = res.data
     })
     pageSize.value = val
@@ -146,7 +149,7 @@ const handleSizeChange = val => {
 
 const handleCurrentChange = val => {
     console.log(`current page: ${val}`)
-    $axios.get('/api/user/page', {params: {pageNum: val, pageSize: pageSize.value}}).then(res => {
+    $axios.get('/api/user/page', {params: {pageNum: val, pageSize: pageSize.value, is_delete: 0}}).then(res => {
         tableData.value = res.data
     })
 }
@@ -154,41 +157,53 @@ const handleCurrentChange = val => {
 
 onMounted(() => {
     load();
+    findAll();
 })
 
 const load = () => {
-    $axios.get('/api/user/page', {params: {pageNum: currentPage.value, pageSize: pageSize.value, username: username.value}}).then(res => {
+    $axios.get('/api/user/page', {params: {pageNum: currentPage.value, pageSize: pageSize.value, username: username.value, email: email.value, address: address.value, is_delete: 0}}).then(res => {
         console.log(res);
         tableData.value = res.data
         total.value = res.total
     }).catch(err => console.log(err))
 }
 
+const findAll = () => {
+    $axios.get('/api/user').then(res => {
+        console.log(res);
+        allTableData.value = res
+    })
+}
+
 const reset = () => {
     username.value = ''
+    email.value = ''
+    address.value = ''
     load();
 }
 
 const doAdd = () => {
     addDialogForm.value = true
+
     console.log("ADDDDDDDDDDDDDDDDDDDDDDDD");
 }
 
 const addUser = () => {
     console.log("ADDDDDUSERRRRRRRRRRRRRRRRRRR");
-    console.log(JSON.stringify(editForm));
-    $axios.post('/api/user', JSON.stringify(editForm)).then(res => {
+    console.log(addForm);
+    $axios.post('/api/user', addForm).then(res => {
         console.log(res);
     }).catch(err => console.log(err))
 }
 
-const edit = (id) => {
+const edit = (row) => {
+    console.log(row);
     editDialogForm.value = true
-    editForm.username = tableData.value[id].username
-    editForm.email = tableData.value[id].email
-    editForm.phone = tableData.value[id].phone
-    editForm.nickname = tableData.value[id].nickname
-    editForm.address = tableData.value[id].address
+    editForm.username = row.username
+    editForm.email = row.email
+    editForm.phone = row.phone
+    editForm.nickname = row.nickname
+    editForm.address = row.address
 }
 
 const validate = () => {
@@ -215,12 +230,12 @@ const updateForm = () => {
 }
 
 const doDelete = (id) => {
-    $axios.delete('/api/user/' + id).then(res => {
-        load();
+    $axios.post('/api/user/' + id).then(res => {
         ElMessage({
             message: '删除成功',
             type: 'success',
         })
+        load();
     })
 }
 

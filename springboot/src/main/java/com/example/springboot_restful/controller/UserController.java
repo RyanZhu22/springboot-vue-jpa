@@ -33,6 +33,18 @@ public class UserController {
         return userService.save(user);
     }
 
+    // 真删除接口
+    @DeleteMapping(value = "/{id}")
+    public Integer deleteByIdT(@PathVariable("id") Integer id) {
+        return userMapper.deleteByIdT(id);
+    }
+
+    // 假删除接口
+    @PostMapping(value = "/{id}")
+    public Integer deleteByIdF(@PathVariable("id") Integer id) {
+        return userMapper.deleteByIdF(id);
+    }
+
     // 分页查询接口
     // 接口路径： /user/page?pageNum=1&pageSize=10
     // LIMIT (pageNum - 1) * pageSize
@@ -41,10 +53,11 @@ public class UserController {
                                         @RequestParam Integer pageSize,
                                         @RequestParam(defaultValue = "") String username,
                                         @RequestParam(defaultValue = "") String email,
-                                        @RequestParam(defaultValue = "") String address) {
+                                        @RequestParam(defaultValue = "") String address,
+                                        @RequestParam("is_delete") Integer is_delete) {
         pageNum = (pageNum - 1) * pageSize;
-        List<User> data = userMapper.selectPage(pageNum, pageSize, username, email, address);
-        Integer total = userMapper.selectTotal(username, email, address);
+        List<User> data = userMapper.selectPage(pageNum, pageSize, username, email, address, is_delete);
+        Integer total = userMapper.selectTotal(username, email, address, is_delete);
         Map<String, Object> res = new HashMap<>();
         res.put("data", data);
         res.put("total", total);

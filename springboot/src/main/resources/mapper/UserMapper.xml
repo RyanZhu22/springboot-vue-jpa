@@ -26,6 +26,16 @@
         <where>
             id = #{id}
         </where>
-
     </update>
+
+    <update id="deleteByIdF">
+        update sys_user
+        <set>
+            is_delete = 1
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
 </mapper>

@@ -29,4 +29,6 @@ public class User {
     private LocalDateTime create_time;
 
     private String avatar_url;
+
+    private Integer is_delete;
 }
