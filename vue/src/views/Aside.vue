@@ -9,24 +9,27 @@
 
         <el-menu-item index="1">
             <el-icon><location /></el-icon>
-            <template #title>Home</template>
+            <template #title>
+                Home
+            </template>
         </el-menu-item>
-        <el-menu-item index="2">
+        <el-menu-item index="2" @click="toHome">
             <el-icon><icon-menu /></el-icon>
             <template #title>System Management</template>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item index="3" @click="toUser">
             <el-icon><document /></el-icon>
-            <template #title>User Management</template>
+            <template #title to="/user">User Management</template>
         </el-menu-item>
-        <el-menu-item index="4">
+        <el-menu-item index="4" @click="toFile">
             <el-icon><setting /></el-icon>
-            <template #title>File Management</template>
+            <template #title to="/file">File Management</template>
         </el-menu-item>
     </el-menu>
 </template>
   
 <script setup>
+import router from '../router'
 import { ref } from 'vue'
 import {
     Document,
@@ -41,6 +44,18 @@ const handleOpen = (key, keyPath) => {
 }
 const handleClose = (key, keyPath) => {
     console.log(key, keyPath)
+}
+
+const toHome = () => {
+    router.push('/home')
+}
+
+const toUser = () => {
+    router.push('/user')
+}
+
+const toFile = () => {
+    router.push('/file')
 }
 </script>
   

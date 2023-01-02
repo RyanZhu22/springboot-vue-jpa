@@ -1,13 +1,13 @@
 <template>
     <div>
-      REGISTER
+        REGISTER
     </div>
 </template>
   
 <script setup>
-  
+
 </script>
   
 <style>
-  
+
 </style>

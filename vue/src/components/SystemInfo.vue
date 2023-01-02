@@ -61,7 +61,16 @@
             <el-table-column label="Option">
                 <template #default="scope">
                     <el-button type="primary" @click="edit(scope.row)">Edit</el-button>
-                    <el-button type="danger" @click="doDelete(scope.row.id)">Delete</el-button>
+                    <el-popconfirm 
+                        confirm-button-text="Yes"
+                        cancel-button-text="No"
+                        title="Are you sure to delete this?" 
+                        @confirm="confirmDelete(scope.row.id)"
+                        @cancel="cancelEvent">
+                        <template #reference>
+                            <el-button type="danger">Delete</el-button>
+                        </template>
+                    </el-popconfirm>
                 </template>
             </el-table-column>
         </el-table>
@@ -108,7 +117,6 @@
 <script setup>
 import { ref, reactive, onMounted, inject } from "vue";
 import { ElMessage } from 'element-plus'
-import { parse } from "@vue/compiler-dom";
 
 const $axios = inject('$axios')
 const username = ref('')
@@ -124,6 +132,7 @@ const editDialogForm = ref(false)
 const addDialogForm = ref(false)
 
 const editForm = reactive({
+    id: '',
     username: '',
     nickname: '',
     email: '',
@@ -154,7 +163,6 @@ const handleCurrentChange = val => {
     })
 }
 
-
 onMounted(() => {
     load();
     findAll();
@@ -184,21 +192,23 @@ const reset = () => {
 
 const doAdd = () => {
     addDialogForm.value = true
-
-    console.log("ADDDDDDDDDDDDDDDDDDDDDDDD");
 }
 
 const addUser = () => {
-    console.log("ADDDDDUSERRRRRRRRRRRRRRRRRRR");
     console.log(addForm);
     $axios.post('/api/user', addForm).then(res => {
         console.log(res);
+        ElMessage({
+            message: 'Add Successfully',
+            type: 'success',
+        })
     }).catch(err => console.log(err))
 }
 
 const edit = (row) => {
     console.log(row);
     editDialogForm.value = true
+    editForm.id = row.id
     editForm.username = row.username
     editForm.email = row.email
     editForm.phone = row.phone
@@ -216,27 +226,39 @@ const validate = () => {
 
 
 const updateForm = () => {
+    // Fail to validate
     if (!validate) {
         return false
     }
+
+    console.log(editForm);
+    // pass to validate
     editDialogForm.value = false
-    $axios.patch('/api/user/' + id).then(res => {
+    $axios.post('/api/user', editForm).then(res => {
+        console.log(res);
         load();
         ElMessage({
-            message: '编辑成功',
+            message: 'Edit Successfully',
             type: 'success',
         })
     })
 }
 
-const doDelete = (id) => {
-    $axios.post('/api/user/' + id).then(res => {
+
+const confirmDelete = (id) => {
+  console.log('confirm!')
+  console.log(id);
+  $axios.post('/api/user/' + id).then(res => {
         ElMessage({
-            message: '删除成功',
+            message: 'Delete Successfully',
             type: 'success',
         })
         load();
     })
+}
+
+const cancelEvent = () => {
+  console.log('cancel!')
 }
 
 

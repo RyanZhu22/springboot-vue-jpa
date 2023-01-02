@@ -1,15 +1,20 @@
 package com.example.springboot_restful.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.mapper.UserMapper;
 import com.example.springboot_restful.service.UserService;
+import com.example.springboot_restful.utils.ExcelUtil;
+import com.sun.net.httpserver.HttpServer;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.FileOutputStream;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -62,6 +67,17 @@ public class UserController {
         res.put("data", data);
         res.put("total", total);
         return res;
+    }
+
+    // 导出接口 Excel poi工具
+    @GetMapping("/export")
+    public void export(HttpServletResponse response) throws Exception {
+        // 从数据库查询数据
+        List<User> list = userMapper.findAll();
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("UserInfo", "User"), User.class, list);
+        try {
+            new FileOutputStream()
+        }
     }
 
 }
