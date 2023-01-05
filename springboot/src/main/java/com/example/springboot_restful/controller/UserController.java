@@ -1,19 +1,19 @@
 package com.example.springboot_restful.controller;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
-import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.mapper.UserMapper;
 import com.example.springboot_restful.service.UserService;
-import com.example.springboot_restful.utils.ExcelUtil;
-import com.sun.net.httpserver.HttpServer;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.*;
 
 @RestController
@@ -74,10 +74,46 @@ public class UserController {
     public void export(HttpServletResponse response) throws Exception {
         // 从数据库查询数据
         List<User> list = userMapper.findAll();
-        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("UserInfo", "User"), User.class, list);
-        try {
-            new FileOutputStream()
-        }
+        // 在内存操作，写出浏览器
+        ExcelWriter writer = ExcelUtil.getWriter(true);
+        // 自定义标题别名
+        writer.setOnlyAlias(true);
+        writer.addHeaderAlias("username", "username");
+        writer.addHeaderAlias("password", "password");
+        writer.addHeaderAlias("nickname", "nickname");
+        writer.addHeaderAlias("email", "email");
+        writer.addHeaderAlias("phone", "phone");
+        writer.addHeaderAlias("address", "address");
+        writer.addHeaderAlias("createTime", "createTime");
+        writer.addHeaderAlias("avatarUrl", "avatarUrl");
+
+        // 一次性写出list内对象到excel, 使用默认样式，强制输出标题
+        writer.write(list, true);
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+        String fileName = URLEncoder.encode("User-Information", "UTF-8");
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        writer.flush(outputStream, true);
+        outputStream.close();
+        writer.close();
+    }
+
+    /**
+     * excel 导入
+     * @param file
+     * @throws Exception
+     */
+
+    @PostMapping("/import")
+    public int imp(MultipartFile file) throws Exception {
+        InputStream inputStream = file.getInputStream();
+        ExcelReader reader = ExcelUtil.getReader(inputStream);
+        List<User> list = reader.readAll(User.class);
+        System.out.println(list);
+        int result = userService.saveBatch(list);
+        return result;
     }
 
 }

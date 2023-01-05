@@ -1,6 +1,7 @@
 package com.example.springboot_restful.mapper;
 
 import com.example.springboot_restful.entity.User;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -37,4 +38,7 @@ public interface UserMapper{
             "and address like concat('%', #{address}, '%')" +
             "and is_delete like concat('%', #{is_delete}, '%')")
     Integer selectTotal(String username, String email, String address, Integer is_delete);
+
+    // 插入（批量）
+    int saveBatch(List<User> list);
 }

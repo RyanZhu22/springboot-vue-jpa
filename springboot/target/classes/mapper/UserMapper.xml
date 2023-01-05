@@ -38,4 +38,13 @@
         </where>
     </update>
 
+    <insert id="saveBatch" parameterType="java.util.List">
+        insert into sys_user (username, nickname, email, phone, address)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.username,jdbcType=BIGINT}, #{item.nickname,jdbcType=BIGINT}, #{item.email,jdbcType=BIGINT},
+            #{item.phone,jdbcType=BIGINT}, #{item.address,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
 </mapper>

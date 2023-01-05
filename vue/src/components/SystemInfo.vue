@@ -11,11 +11,14 @@
     <div style="padding: 10px">
         <el-button type="primary" @click="doAdd">Add</el-button>
         <!-- confirm 点击确定按钮触发 delBatch事件 -->
-        <el-upload action="https://localhost:9090/user/import" :show-file-list="false" accept=".xlsx"
+        <el-upload 
+            action="http://localhost:8001/api/user/import" 
+            :show-file-list="false" accept=".xlsx"
+            :on-success="handleSuccess"
             style="display: inline-block">
-            <el-button type="primary" class="ml-5">import</el-button>
+            <el-button type="primary" class="ml-5" >import</el-button>
         </el-upload>
-        <el-button type="primary" class="ml-5">Export</el-button>
+        <el-button type="primary" class="ml-5" @click="doExport">Export</el-button>
     </div>
 
     <!-- Add Pop Form-->
@@ -116,6 +119,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, inject } from "vue";
+import router from '../router'
 import { ElMessage } from 'element-plus'
 
 const $axios = inject('$axios')
@@ -203,6 +207,18 @@ const addUser = () => {
             type: 'success',
         })
     }).catch(err => console.log(err))
+}
+
+const handleSuccess = () => {
+    load();
+    ElMessage({
+        message: 'Import Successfully',
+        type: 'success',
+    })
+}
+
+const doExport = () => {
+    window.open('http://localhost:8001/api/user/export')
 }
 
 const edit = (row) => {
