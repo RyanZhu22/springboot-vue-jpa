@@ -11,9 +11,6 @@ public interface UserMapper{
     @Select("SELECT * from sys_user where is_delete = 0")
     List<User> findAll();
 
-    @Select("SELECT * from sys_user where is_delete = 0")
-    int findOne(@Param("username") String username)
-
     @Insert("INSERT into sys_user(username,password,nickname,email,phone,address) VALUES(#{username},#{password}," +
             "#{nickname},#{email},#{phone},#{address})")
     int insert(User user);
