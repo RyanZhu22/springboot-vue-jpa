@@ -4,10 +4,12 @@
             <div class="container">
                 <div class="header" style="text-align: -webkit-center">LOGIN</div>
                 <el-form status-icon label-width="70px" class="demo-ruleForm" style="margin-top: 20px;"
-                    ref="ruleFormRef" :model="loginForm" :rules="rules">
+                    ref="loginFormRef" :model="loginForm" :rules="rules">
                     <el-form-item label="Username" prop="username" style="margin-top: 40px;">
-                        <el-input v-model="loginForm.username" type="username" autocomplete="off" />
+                        <el-input v-model="loginForm.username" type="username"
+                            autocomplete="off" />
                     </el-form-item>
+
                     <el-form-item label="Password" prop="password" style="margin-top: 20px;">
                         <el-input v-model="loginForm.password" type="password" autocomplete="off" />
                     </el-form-item>
@@ -22,45 +24,44 @@
 </template>
   
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, } from 'vue';
 
-const ruleFormRef = ref()
+const loginFormRef = ref()
+
+// username validation
+const usernameValidate = (rule, value, callback) => {
+    // If username do not input the value
+    if (value === '') {
+        callback(new Error('Please input the password'))
+    } else if (value !== loginForm.username) {
+        callback(new Error("Input value is mismatch!"))
+    } else {
+        callback()
+    }
+}
+
+// password validation
+const passwordValidate = (rule, value, callback) => {
+    if (value === '') {
+        callback(new Error('Please input the password'))
+    } else if (value !== loginForm.password) {
+        callback(new Error("Input value is mismatch!"))
+    } else {
+        callback()
+    }
+}
 
 const loginForm = reactive({
     username: '',
-    password: ''
+    password: '',
 })
 
 const rules = reactive({
-    username: [{ validator: validatePass, trigger: 'blur' }],
-    password: [{ validator: validatePass2, trigger: 'blur' }],
+    username: [{ validator: usernameValidate, trigger: 'blur' }],
+    password: [{ validator: passwordValidate, trigger: 'blur' }],
 })
 
-const validatePass = (rule, value, callback) => {
-    if (value === '') {
-        callback(new Error('Please input the username'))
-    } else {
-        // input value is not Null
-        if (loginForm.username !== '') {
-            if (!ruleFormRef.value) return ruleFormRef.value.validateField('username', () => null)
-        }
-        callback()
-    }
-}
-
-const validatePass2 = (rule, value, callback) => {
-    if (value === '') {
-        callback(new Error('Please input the password'))
-    } else {
-        // input value is not Null
-        if (loginForm.password !== '') {
-            if (!ruleFormRef.value) return ruleFormRef.value.validateField('password', () => null)
-        }
-        callback()
-    }
-}
-
-const submitForm = (formEl) => {
+const validate = (formEl) => {
     if (!formEl) return
     formEl.validate((valid) => {
         if (valid) {
@@ -70,9 +71,25 @@ const submitForm = (formEl) => {
             return false
         }
     })
+}
 
+const submitForm = (formEl) => {
+    // Front-end validate
+    validate(formEl)
+
+    // Post request to Back-end validate
+    $axios.post('/api/login', loginForm).then(res => {
+        console.log(res);
+    }).catch(err => console.log(err))
 
 }
+
+const reset = (formEl) => {
+    if (!formEl) return
+    formEl.resetFields()
+}
+
+
 
 </script>
   

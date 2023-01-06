@@ -1,5 +1,8 @@
 package com.example.springboot_restful.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.*;
+import com.example.springboot_restful.controller.dto.UserDTO;
 import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,4 +34,12 @@ public class UserService {
         }
     }
 
+    public boolean login(UserDTO userDTO) {
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(userDTO.getPassword());
+
+
+        return false;
+    }
 }

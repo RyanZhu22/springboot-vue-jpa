@@ -1,8 +1,10 @@
 package com.example.springboot_restful.controller;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.example.springboot_restful.controller.dto.UserDTO;
 import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.mapper.UserMapper;
 import com.example.springboot_restful.service.UserService;
@@ -32,10 +34,26 @@ public class UserController {
         return all;
     }
 
+    // RequestBody 将前端JSON数据转化成Java对象
     @PostMapping
     public Integer save(@RequestBody User user) {
         // 新增或更新
         return userService.save(user);
+    }
+
+    /**
+     * 登录接口
+     * LoginForm<FormData>
+     */
+    @PostMapping("/login")
+    public boolean login(@RequestBody UserDTO userDTO) {
+        String username = userDTO.getUsername();
+        String password = userDTO.getPassword();
+        // hutool校验username是否未空
+        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
+            return false;
+        }
+        return userService.login(userDTO);
     }
 
     // 真删除接口
@@ -105,7 +123,6 @@ public class UserController {
      * @param file
      * @throws Exception
      */
-
     @PostMapping("/import")
     public int imp(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();
