@@ -5,6 +5,7 @@ import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.example.springboot_restful.controller.dto.UserDTO;
+import com.example.springboot_restful.common.JsonResult;
 import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.mapper.UserMapper;
 import com.example.springboot_restful.service.UserService;
@@ -36,24 +37,30 @@ public class UserController {
 
     // RequestBody 将前端JSON数据转化成Java对象
     @PostMapping
-    public Integer save(@RequestBody User user) {
+    public JsonResult<User> save(@RequestBody User user) {
         // 新增或更新
         return userService.save(user);
     }
 
     /**
      * 登录接口
-     * LoginForm<FormData>
      */
     @PostMapping("/login")
-    public boolean login(@RequestBody UserDTO userDTO) {
+    public JsonResult<UserDTO> login(@RequestBody UserDTO userDTO) {
         String username = userDTO.getUsername();
         String password = userDTO.getPassword();
         // hutool校验username是否未空
         if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
-            return false;
+            return new JsonResult<>(false);
         }
-        return userService.login(userDTO);
+        User user = userMapper.login(username, password);
+        if (user != null) {
+            // 查询数据库 验证username and password是否一致
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return new JsonResult<>();
+            }
+        }
+        return new JsonResult<>(false);
     }
 
     // 真删除接口

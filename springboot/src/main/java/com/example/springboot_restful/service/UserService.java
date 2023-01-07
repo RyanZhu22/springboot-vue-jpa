@@ -1,8 +1,6 @@
 package com.example.springboot_restful.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.*;
-import com.example.springboot_restful.controller.dto.UserDTO;
+import com.example.springboot_restful.common.JsonResult;
 import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +14,17 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-
-    public int save(User user) {
-        if (user.getId() == null) {
-            return userMapper.insert(user);
-        } else {
-            return userMapper.update(user);
+    public JsonResult<User> save(User user) {
+        // 如果返回false
+        if (userMapper.findByUsername(user.getUsername()) == null) {
+            if (user.getId() == null) {
+                userMapper.insert(user);
+            } else {
+                userMapper.update(user);
+            }
+            return new JsonResult<>(user);
         }
+        return new JsonResult<>(false);
     }
 
     // 批量删除
@@ -34,11 +36,4 @@ public class UserService {
         }
     }
 
-    public boolean login(UserDTO userDTO) {
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(userDTO.getPassword());
-
-        return false;
-    }
 }

@@ -15,6 +15,11 @@ public interface UserMapper{
             "#{nickname},#{email},#{phone},#{address})")
     int insert(User user);
 
+    @Select("SELECT * from sys_user where username = #{username}")
+    User findByUsername(@Param("username") String username);
+
+    User login(@Param("username") String username, @Param("password") String password);
+
     // 真删除
     @Delete("DELETE FROM sys_user WHERE id = #{id}")
     int deleteByIdT(@Param("id") Integer id);
