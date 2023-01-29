@@ -4,11 +4,17 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.example.springboot_restful.common.ResultBody;
+import com.example.springboot_restful.common.error.BusinessException;
+import com.example.springboot_restful.common.error.CommonEnum;
+import com.example.springboot_restful.common.error.ResultEnum;
+import com.example.springboot_restful.common.handler.MsgException;
 import com.example.springboot_restful.controller.dto.UserDTO;
 import com.example.springboot_restful.common.JsonResult;
 import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.mapper.UserMapper;
 import com.example.springboot_restful.service.UserService;
+import com.example.springboot_restful.utils.TokenUtils;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +43,7 @@ public class UserController {
 
     // RequestBody 将前端JSON数据转化成Java对象
     @PostMapping
-    public JsonResult<User> save(@RequestBody User user) {
+    public ResultBody save(@RequestBody User user) throws ResultBody {
         // 新增或更新
         return userService.save(user);
     }
@@ -46,21 +52,38 @@ public class UserController {
      * 登录接口
      */
     @PostMapping("/login")
-    public JsonResult<UserDTO> login(@RequestBody UserDTO userDTO) {
+    public ResultBody login(@RequestBody UserDTO userDTO) throws ResultBody {
         String username = userDTO.getUsername();
         String password = userDTO.getPassword();
         // hutool校验username是否未空
         if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
-            return new JsonResult<>(false);
+            return ResultBody.error("500", "Username is empty");
         }
-        User user = userMapper.login(username, password);
-        if (user != null) {
-            // 查询数据库 验证username and password是否一致
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                return new JsonResult<>();
-            }
+        UserDTO dto = userService.login(userDTO);
+
+        return ResultBody.success(dto);
+    }
+
+    /**
+     * 注册接口
+     * @param user
+     * @return
+     */
+    @PostMapping("/register")
+    public ResultBody register(@RequestBody User user) {
+        String username = user.getUsername();
+        String password = user.getPassword();
+        // hutool校验username是否未空
+        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
+            return ResultBody.error("500", "username or password is null");
         }
-        return new JsonResult<>(false);
+
+        if (userMapper.registerByUsername(user.getUsername()) == null) {
+            userMapper.insert(user);
+            return ResultBody.success();
+        } else {
+            return ResultBody.error("500", "Username already exists");
+        }
     }
 
     // 真删除接口
@@ -91,6 +114,7 @@ public class UserController {
         Map<String, Object> res = new HashMap<>();
         res.put("data", data);
         res.put("total", total);
+
         return res;
     }
 

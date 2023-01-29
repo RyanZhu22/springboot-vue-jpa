@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
+
 // 2. 定义一些路由
 // 每个路由都需要映射到一个组件。
 // 我们后面再讨论嵌套路由。
@@ -8,25 +9,23 @@ const routes = [
     path: "/",
     name: "index",
     component: () => import("../views/Index.vue"),
-    redirect: '/home',
+    redirect: "/home",
     children: [
-        {
-            path: 'home',
-            name: 'system',
-            component: () => import('../components/SystemInfo.vue')
-        },
-        {
-            path: 'user',
-            name: 'user',
-            component: () => import('../components/UserInfo.vue')
-        },
-        {
-            path: 'file',
-            name: 'file',
-            component: () => import('../components/fileInfo.vue')
-        },
-        
-
+      {
+        path: "home",
+        name: "system",
+        component: () => import("../components/SystemInfo.vue"),
+      },
+      {
+        path: "user",
+        name: "user",
+        component: () => import("../components/UserInfo.vue"),
+      },
+      {
+        path: "file",
+        name: "file",
+        component: () => import("../components/fileInfo.vue"),
+      },
     ],
   },
   {
@@ -39,7 +38,6 @@ const routes = [
     name: "register",
     component: () => import("../components/Register.vue"),
   },
-
 ];
 
 // 3. 创建路由实例并传递 `routes` 配置

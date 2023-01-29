@@ -16,7 +16,7 @@
             :show-file-list="false" accept=".xlsx"
             :on-success="handleSuccess"
             style="display: inline-block">
-            <el-button type="primary" class="ml-5" >import</el-button>
+            <el-button type="primary" class="ml-5">import</el-button>
         </el-upload>
         <el-button type="primary" class="ml-5" @click="doExport">Export</el-button>
     </div>
@@ -169,7 +169,7 @@ const handleCurrentChange = val => {
 
 onMounted(() => {
     load();
-    findAll();
+    // findAll();
 })
 
 const load = () => {
@@ -240,7 +240,6 @@ const validate = () => {
     });
 }
 
-
 const updateForm = () => {
     // Fail to validate
     if (!validate) {
@@ -259,7 +258,6 @@ const updateForm = () => {
         })
     })
 }
-
 
 const confirmDelete = (id) => {
   console.log('confirm!')

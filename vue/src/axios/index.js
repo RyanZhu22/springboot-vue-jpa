@@ -1,20 +1,30 @@
 // 1. 引入
 import axios from "axios";
+import { ElMessage } from 'element-plus'
+import router from "../router";
 
-
+// Request
 axios.interceptors.request.use(config => {
-    const token = localStorage.getItem('token')
-    if (token) {
-        config.headers.Authorization = token;
+    let user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {}
+    if (user) {
+        config.headers['token'] = user.token;
     }
     return config
 }, err => {
     return Promise.reject(err)
 })
 
-// 响应拦截
+// Response
 axios.interceptors.response.use(response => {
     const res = response.data
+
+    if (res.code === '401') {
+        ElMessage({
+            message: res.message,
+            type: 'error',
+        })
+        router.push('/login')
+    }
     return res
 }, err => {
     return Promise.reject(err)

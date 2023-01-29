@@ -70,11 +70,15 @@
 import { reactive, ref, inject} from 'vue';
 import { ElMessage } from 'element-plus'
 import router from '../router'
+import useUserStore from "../store/user"
 const $axios = inject('$axios')
 
 const loginFormRef = ref()
 const registerFormRef = ref()
 const showLogin = ref(true)
+
+// 实例化 store
+const userStore = useUserStore()
 
 const loginForm = reactive({
     username: '',
@@ -172,28 +176,36 @@ const validatation = (formEl) => {
     })
 }
 
-const submitLoginForm = (formEl) => {
+const submitLoginForm = async (formEl) => {
     // Front-end validate
     validatation(formEl)
 
+    await userStore.login(loginForm)
+    router.push('/home')
     // Post request to Back-end validate
-    $axios.post('/api/user/login', loginForm).then(res => {
-        console.log(res);
-        if (res.code === "200") {
-            ElMessage({
-                message: 'Login Successfully',
-                type: 'success',
-            })
-            router.push('/home')
-        } else if (res.code === "500") {
-            ElMessage({
-                message: 'Login Failed',
-                type: 'error',
-            })
-            loginForm.username = ''
-            loginForm.password = ''
-        }
-    }).catch(err => console.log(err))
+    // $axios.post('/api/user/login', loginForm).then(res => {
+    //     console.log(res);
+    //     if (res.code === "200") {
+    //         ElMessage({
+    //             message: 'Login Successfully',
+    //             type: 'success',
+    //         })
+    //         // Back-end return nickname, avatarUrl and token
+    //         userStore.login(res.result)
+    //         router.push('/home')
+    //     } else if (res.code === "500") {
+    //         ElMessage({
+    //             message: 'Login Failed',
+    //             type: 'error',
+    //         })
+    //         loginForm.username = ''
+    //         loginForm.password = ''
+    //     }
+    // }).catch(err => console.log(err))
+}
+
+const toRegister = () => {
+    showLogin.value = false
 }
 
 const submitRegisterForm = (formEl) => {
@@ -201,14 +213,15 @@ const submitRegisterForm = (formEl) => {
     validatation(formEl)
     console.log(registerForm);
     // Post request to Back-end validate
-    $axios.post('/api/user', registerForm).then(res => {
+    $axios.post('/api/user/register', registerForm).then(res => {
         console.log(res);
         if (res.code === "200") {
             ElMessage({
                 message: 'Register Successfully',
                 type: 'success',
             })
-            router.push('/home')
+            loginForm.username = registerForm.username
+            showLogin.value = true
         } else if (res.code === '500') {
             ElMessage({
                 message: 'Register Failed',
@@ -223,9 +236,7 @@ const reset = (formEl) => {
     formEl.resetFields()
 }
 
-const toRegister = () => {
-    showLogin.value = false
-}
+
 
 
 </script>

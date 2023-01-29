@@ -2,10 +2,12 @@ package com.example.springboot_restful.common;
 
 import com.example.springboot_restful.common.error.BaseErrorInfoInterface;
 import com.example.springboot_restful.common.error.CommonEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class ResultBody {
+@AllArgsConstructor
+public class ResultBody extends Throwable {
     /**
      * 响应码
      */
@@ -29,6 +31,29 @@ public class ResultBody {
     public ResultBody(BaseErrorInfoInterface baseErrorInfoInterface) {
         this.code = baseErrorInfoInterface.getResultCode();
         this.message = baseErrorInfoInterface.getResultMsg();
+    }
+
+    /**
+     *
+     * @return ResultBody
+     */
+    public static ResultBody success() {
+        ResultBody resultBody = new ResultBody(CommonEnum.SUCCESS);
+        return resultBody;
+    }
+
+    /**
+     *
+     * @param code
+     * @param message
+     * @return
+     */
+    public static ResultBody success(String code,String message){
+        ResultBody resultBody = new ResultBody();
+        resultBody.setCode(code);
+        resultBody.setMessage(message);
+        resultBody.setResult(null);
+        return resultBody;
     }
 
     /**

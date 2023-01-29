@@ -10,7 +10,9 @@ public enum CommonEnum implements BaseErrorInfoInterface {
     OT_FOUND("404", "未找到该资源!"),
     INTERNAL_SERVER_ERROR("500", "服务器内部错误!"),
     SERVER_BUSY("503", "服务器正忙，请稍后再试!"),
+    OTHER_SERVICE_ERROR("600", "其他业务异常"),
     NULLPOINTER_ERROR("1001","空指针异常");
+
 
     //错误码
     private String resultCode;

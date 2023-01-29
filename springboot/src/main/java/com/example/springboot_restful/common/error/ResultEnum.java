@@ -4,7 +4,7 @@ package com.example.springboot_restful.common.error;
  * 自定义枚举
  * 使用枚举统一管理错误信息
  */
-enum ResultEnum {
+public enum ResultEnum implements BaseErrorInfoInterface {
     UNKNOWN_ERROR(-100, "Unknown error"),
     NEED_LOGIN(-1, "Not logged in"),
     REPEAT_REGISTER(-2, "This user is registered"),
@@ -30,5 +30,15 @@ enum ResultEnum {
 
     public String getMsg() {
         return msg;
+    }
+
+    @Override
+    public String getResultCode() {
+        return null;
+    }
+
+    @Override
+    public String getResultMsg() {
+        return null;
     }
 }
