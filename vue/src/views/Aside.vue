@@ -23,7 +23,7 @@
         </el-menu-item>
         <el-menu-item index="4" @click="toFile">
             <el-icon><setting /></el-icon>
-            <template #title to="/file">File Management</template>
+            <template #title to="/files">File Management</template>
         </el-menu-item>
     </el-menu>
 </template>
@@ -55,7 +55,7 @@ const toUser = () => {
 }
 
 const toFile = () => {
-    router.push('/file')
+    router.push('/files')
 }
 </script>
   

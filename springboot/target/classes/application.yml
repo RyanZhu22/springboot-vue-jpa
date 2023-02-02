@@ -14,3 +14,7 @@ mybatis:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+files:
+  upload:
+    path: D:/project-code/springboot/springboot-vue/springboot/files/

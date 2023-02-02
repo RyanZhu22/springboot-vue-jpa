@@ -13,7 +13,7 @@
         <!-- confirm 点击确定按钮触发 delBatch事件 -->
         <el-upload 
             action="http://localhost:8001/api/user/import" 
-            :show-file-list="false" accept=".xlsx"
+            :show-files-list="false" accept=".xlsx"
             :on-success="handleSuccess"
             style="display: inline-block">
             <el-button type="primary" class="ml-5">import</el-button>
