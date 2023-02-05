@@ -34,11 +34,11 @@ public class MyExceptionHandler {
      * @param e   e
      * @return {@link ResultBody}
      */
-    @ExceptionHandler(value = NullPointerException.class)
-    public ResultBody exceptionHandler(HttpServletRequest req, NullPointerException e) {
-        logger.error("空指针异常处理！原因是:", e.getMessage());
-        return ResultBody.error(CommonEnum.NULLPOINTER_ERROR);
-    }
+//    @ExceptionHandler(value = NullPointerException.class)
+//    public ResultBody exceptionHandler(HttpServletRequest req, NullPointerException e) {
+//        logger.error("空指针异常处理！原因是:", e.getMessage());
+//        return ResultBody.error(CommonEnum.NULLPOINTER_ERROR);
+//    }
 
     /**
      * 其他异常处理程序
@@ -47,9 +47,9 @@ public class MyExceptionHandler {
      * @param e   e
      * @return {@link ResultBody}
      */
-    @ExceptionHandler(value = Exception.class)
-    public ResultBody exceptionHandler(HttpServletRequest req, Exception e) {
-        logger.error("其他异常处理程序！原因是:", e.getMessage());
-        return ResultBody.error(CommonEnum.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler(value = Exception.class)
+//    public ResultBody exceptionHandler(HttpServletRequest req, Exception e) {
+//        logger.error("其他异常处理程序！原因是:", e.getMessage());
+//        return ResultBody.error(CommonEnum.INTERNAL_SERVER_ERROR);
+//    }
 }

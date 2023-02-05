@@ -55,7 +55,7 @@ const toUser = () => {
 }
 
 const toFile = () => {
-    router.push('/files')
+    router.push('/file')
 }
 </script>
   

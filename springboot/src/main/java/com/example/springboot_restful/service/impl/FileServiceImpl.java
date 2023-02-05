@@ -1,10 +1,14 @@
 package com.example.springboot_restful.service.impl;
 
+import com.example.springboot_restful.common.handler.MsgException;
 import com.example.springboot_restful.entity.Files;
 import com.example.springboot_restful.mapper.FileMapper;
 import com.example.springboot_restful.service.FileService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -15,5 +19,56 @@ public class FileServiceImpl implements FileService {
     @Override
     public int insert(Files files) {
         return fileMapper.insert(files);
+    }
+
+    @Override
+    public int findAll() {
+        return fileMapper.findAll();
+    }
+
+    @Override
+    public List<Files> selectByMd5(String md5) {
+        return fileMapper.selectByMd5(md5);
+    }
+
+    @Override
+    public int deleteByF(Integer id) {
+        return fileMapper.deleteByF(id);
+    }
+
+    @Override
+    public List<Files> findPage(Integer pageNum, Integer pageSize) {
+        return fileMapper.findPage(pageNum, pageSize);
+    }
+
+    @Override
+    public int deleteBatch(List<Integer> ids) {
+        // 判断ids不为null
+        if (ids == null || ids.size() == 0) {
+            throw new MsgException("500", "ids为null");
+        }
+        try {
+            return fileMapper.deleteBatch(ids);
+        } catch (Exception e) {
+            throw new MsgException("500", "Server error");
+        }
+    }
+
+    @Override
+    public int deleteBatchByF(List<Integer> ids) {
+        int i = fileMapper.deleteBatchByF(ids);
+        if (i != 1) {
+            throw new MsgException("500", "Server error");
+        }
+        return i;
+    }
+
+    @Override
+    public int updateEnable(Files files) {
+        int i = fileMapper.updateEnable(files);
+        if (i != 1) {
+            throw new MsgException("500", "Server error");
+        }
+        return i;
     }
 }

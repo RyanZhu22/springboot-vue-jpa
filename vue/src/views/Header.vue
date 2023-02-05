@@ -1,10 +1,23 @@
 <template>
-    <el-header style="text-align: right; font-size: 12px; background-color: #ffffff">
-        <div class="toolbar">
-            <el-dropdown>
-                <el-icon style="margin-right: 8px; margin-top: 1px">
-                    <setting />
-                </el-icon>
+    <div class="toolbar">
+        <!-- breadcrumb -->
+        <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/' }" style="font-size: 20px;">home</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/' }" style="font-size: 20px;">
+                promotion management</el-breadcrumb-item>
+        </el-breadcrumb>
+
+        <!-- right -->
+        <div>
+            <!-- avatar img -->
+            <el-avatar
+                size="normal" fit="cover" :src="userStore.avatarUrl" />
+
+            <el-dropdown style="margin-right: 3rem;">
+                <el-button type="primary">
+                    {{ userStore.nickname }}
+                    <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                </el-button>
                 <template #dropdown>
                     <el-dropdown-menu>
                         <el-dropdown-item>Account Information</el-dropdown-item>
@@ -12,16 +25,17 @@
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
-            <span id="userName">{{ userStore.nickname }}</span>
         </div>
-    </el-header>
+
+    </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
 import useUserStore from "../store/user";
-import { Setting } from "@element-plus/icons-vue";
+import { ArrowDown } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { onMounted } from 'vue';
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -45,15 +59,10 @@ const signOut = () => {
 }
 
 .toolbar {
+    width: 100%;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    height: 100%;
-    right: 20px;
+    justify-content:space-between
 }
 
-#userName {
-    font-size: large;
-    font-weight: bold;
-}
 </style>

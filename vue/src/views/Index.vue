@@ -1,9 +1,11 @@
 <template>
     <el-container class="layout-container-demo">
-        <Aside />
-        <el-container id="container">
-            <Header />
-            <Main />
+        <el-container>
+            <Aside />
+            <el-container id="container">
+                <el-header><Header /></el-header>
+                <el-main><Main /></el-main>
+            </el-container>
         </el-container>
     </el-container>
 </template>
@@ -12,6 +14,8 @@
 import Aside from './Aside.vue';
 import Header from './Header.vue';
 import Main from './Main.vue';
+
+
 </script>
   
 <style>

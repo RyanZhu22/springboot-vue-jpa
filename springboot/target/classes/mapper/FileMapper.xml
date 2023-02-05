@@ -7,4 +7,53 @@
         insert into sys_file (file_name, file_type, file_size, url, md5, is_delete, enable)
             values (#{file_name}, #{file_type}, #{file_size}, #{url}, #{md5}, #{is_delete}, #{enable})
     </insert>
+
+    <select id="selectByMd5" parameterType="java.lang.String" resultType="com.example.springboot_restful.entity.Files">
+        select * from sys_file where md5 = #{md5}
+    </select>
+
+    <update id="deleteByF" parameterType="java.lang.Integer">
+        update sys_file
+        <set>
+            is_delete = True
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="findPage" parameterType="java.lang.Integer" resultType="com.example.springboot_restful.entity.Files">
+        select * from sys_file
+        <where>
+            is_delete like False
+        </where>
+        limit #{pageNum}, #{pageSize}
+    </select>
+
+    <delete id="deleteBatch" parameterType="java.lang.Integer">
+        delete from sys_file where
+        <foreach collection="list" item="id" index="index" separator="or">
+            id = #{id}
+        </foreach>
+    </delete>
+
+    <update id="deleteBatchByF" parameterType="java.lang.Integer">
+        <foreach collection="ids" item="id" index="index" separator=";">
+            update sys_file
+            <set>
+                is_delete = True
+            </set>
+            where id = #{id}
+        </foreach>
+    </update>
+
+    <select id="findAll" resultType="java.lang.Integer">
+        select count(*) from sys_file where is_delete = FALSE
+    </select>
+
+    <update id="updateEnable">
+        update sys_file
+        <set>
+            enable = #{enable}
+        </set>
+        where id = #{id}
+    </update>
 </mapper>

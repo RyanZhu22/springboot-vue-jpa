@@ -24,7 +24,7 @@ const routes = [
       {
         path: "file",
         name: "file",
-        component: () => import("../components/fileInfo.vue"),
+        component: () => import("../components/FileInfo.vue"),
       },
     ],
   },
