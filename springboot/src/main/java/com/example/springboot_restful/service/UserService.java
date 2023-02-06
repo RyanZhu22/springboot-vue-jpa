@@ -29,6 +29,7 @@ public class UserService {
         if (one != null && one.getUsername().equals(username) && userDTO.getPassword().equals(password)) {
             // 设置nickname, avatarUrl, token
             String token = TokenUtils.genToken(one.getId().toString(), one.getPassword());
+            userDTO.setId(one.getId());
             userDTO.setNickname(one.getNickname());
             userDTO.setAvatarUrl(one.getAvatar_url());
             userDTO.setToken(token);

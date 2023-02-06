@@ -9,6 +9,7 @@ const useUserStore = defineStore('user', {
     persist: true,
     // 定义状态：一个函数，返回一个对象
     state: () => ({
+        id: '',
         nickname: '',
         avatarUrl: '',
         token: '',
@@ -27,6 +28,7 @@ const useUserStore = defineStore('user', {
                 console.log(res);
                 if (res.code === '200') {
                     // action 中修改状态
+                    this.id = res.result.id
                     this.nickname = res.result.nickname
                     this.avatarUrl = res.result.avatarUrl
                     this.token = res.result.token
@@ -34,13 +36,21 @@ const useUserStore = defineStore('user', {
                         message: 'Login Successfully',
                         type: 'success',
                     })
+                    console.log(this.id);
                     console.log(this.nickname);
                     console.log(this.avatarUrl);
                     console.log(this.token);
                 }
-            }).catch(err => console.log("ERROR" + err))
+            }).catch(err => {
+                console.log("ERROR" + err)
+                ElMessage({
+                    message: 'Login Fail',
+                    type: 'error'
+                })
+            })
         },
         logout() {
+            this.id = ''
             this.nickname = ''
             this.avatarUrl = ''
             this.token = ''

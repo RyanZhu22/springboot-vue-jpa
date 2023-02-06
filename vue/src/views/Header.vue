@@ -11,7 +11,7 @@
         <div>
             <!-- avatar img -->
             <el-avatar
-                size="normal" fit="cover" :src="userStore.avatarUrl" />
+                 fit="cover" :src="userStore.avatarUrl" />
 
             <el-dropdown style="margin-right: 3rem;">
                 <el-button type="primary">

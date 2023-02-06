@@ -17,6 +17,7 @@ import com.example.springboot_restful.service.UserService;
 import com.example.springboot_restful.utils.TokenUtils;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +35,22 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/id")
+    public ResultBody findOne(@RequestParam("id") Integer id) {
+        User user = userMapper.findByUserId(id);
+        return ResultBody.success(user);
+    }
+
+    @PostMapping("/update")
+    public ResultBody update(User user) {
+        int update = userMapper.update(user);
+        if (update != 1) {
+            return ResultBody.error("500", "Internet Error");
+        }
+
+        return ResultBody.success();
+    }
 
     @GetMapping
     public List<User> findAll() {

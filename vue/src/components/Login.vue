@@ -182,26 +182,6 @@ const submitLoginForm = async (formEl) => {
 
     await userStore.login(loginForm)
     router.push('/home')
-    // Post request to Back-end validate
-    // $axios.post('/api/user/login', loginForm).then(res => {
-    //     console.log(res);
-    //     if (res.code === "200") {
-    //         ElMessage({
-    //             message: 'Login Successfully',
-    //             type: 'success',
-    //         })
-    //         // Back-end return nickname, avatarUrl and token
-    //         userStore.login(res.result)
-    //         router.push('/home')
-    //     } else if (res.code === "500") {
-    //         ElMessage({
-    //             message: 'Login Failed',
-    //             type: 'error',
-    //         })
-    //         loginForm.username = ''
-    //         loginForm.password = ''
-    //     }
-    // }).catch(err => console.log(err))
 }
 
 const toRegister = () => {
