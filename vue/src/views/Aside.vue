@@ -7,13 +7,13 @@
             <el-radio-button :label="true"  size="small">collapse</el-radio-button>
         </el-radio-group>
 
-        <el-menu-item index="1">
+        <el-menu-item index="1" @click="toHome">
             <el-icon><location /></el-icon>
-            <template #title>
+            <template #title >
                 Home
             </template>
         </el-menu-item>
-        <el-menu-item index="2" @click="toHome">
+        <el-menu-item index="2" @click="toSystem">
             <el-icon><icon-menu /></el-icon>
             <template #title>System Management</template>
         </el-menu-item>
@@ -48,6 +48,10 @@ const handleClose = (key, keyPath) => {
 
 const toHome = () => {
     router.push('/home')
+}
+
+const toSystem = () => {
+    router.push('/system')
 }
 
 const toUser = () => {
