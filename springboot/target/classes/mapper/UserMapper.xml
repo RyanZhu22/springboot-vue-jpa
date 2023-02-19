@@ -28,6 +28,10 @@
         </where>
     </update>
 
+    <select id="findEchartsData">
+
+    </select>
+
     <update id="deleteByIdF">
         update sys_user
         <set>

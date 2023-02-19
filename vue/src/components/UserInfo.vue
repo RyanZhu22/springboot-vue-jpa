@@ -44,12 +44,6 @@ const $axios = inject('$axios')
 // 实例化 store
 const userStore = useUserStore()
 
-// username: '',
-//     nickname: '',
-//     email: '',
-//     phone: '',
-//     address: '',
-//     create_time: ''
 const data = ref([])
 
 const uploadData = reactive({

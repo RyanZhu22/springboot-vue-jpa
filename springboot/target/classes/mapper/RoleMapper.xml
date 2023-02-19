@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace指向mapper.xml所对应的Mapper接口-->
+<mapper namespace="com.example.springboot_restful.mapper.RoleMapper">
+    <update id="saveOrUpdate" parameterType="com.example.springboot_restful.entity.Role">
+        <choose>
+            <when test="id == null">
+                INSERT INTO sys_role (role_name, description)
+                VALUES (#{role_name}, #{description})
+            </when>
+            <otherwise>
+                UPDATE sys_role
+                SET role_name = #{role_name},
+                description = #{description}
+                WHERE id = #{id}
+            </otherwise>
+        </choose>
+    </update>
+    
+    <delete id="removeById" parameterType="int">
+        DELETE FROM sys_role
+        where id = #{id}
+    </delete>
+
+    <select id="getById" parameterType="int" resultType="com.example.springboot_restful.entity.Role">
+        SELECT * FROM sys_role
+        where id = #{id}
+    </select>
+
+    <select id="findPage" parameterType="com.example.springboot_restful.entity.Role" resultType="com.example.springboot_restful.entity.Role">
+        SELECT * from sys_role
+        <where>
+            <if test="role_name != null and role_name != ''">
+                AND role_name LIKE CONCAT('%', #{role_name}, '%')
+            </if>
+        </where>
+        LIMIT #{pageNum}, #{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="int">
+        SELECT count(*) from sys_role
+    </select>
+</mapper>

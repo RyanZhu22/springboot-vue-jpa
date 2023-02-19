@@ -26,6 +26,16 @@ const routes = [
         component: () => import("../components/UserInfo.vue"),
       },
       {
+        path: "role",
+        name: "role",
+        component: () => import("../components/RoleInfo.vue"),
+      },
+      {
+        path: "menu",
+        name: "menu",
+        component: () => import("../components/MenuInfo.vue"),
+      },
+      {
         path: "file",
         name: "file",
         component: () => import("../components/FileInfo.vue"),

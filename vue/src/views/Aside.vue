@@ -21,7 +21,15 @@
             <el-icon><document /></el-icon>
             <template #title to="/user">User Management</template>
         </el-menu-item>
-        <el-menu-item index="4" @click="toFile">
+        <el-menu-item index="4" @click="toRole">
+            <el-icon><setting /></el-icon>
+            <template #title to="/role">Role Management</template>
+        </el-menu-item>
+        <el-menu-item index="5" @click="toMenu">
+            <el-icon><setting /></el-icon>
+            <template #title to="/menu">Menu Management</template>
+        </el-menu-item>
+        <el-menu-item index="6" @click="toFile">
             <el-icon><setting /></el-icon>
             <template #title to="/files">File Management</template>
         </el-menu-item>
@@ -56,6 +64,14 @@ const toSystem = () => {
 
 const toUser = () => {
     router.push('/user')
+}
+
+const toRole = () => {
+    router.push('/role')
+}
+
+const toMenu = () => {
+    router.push('/menu')
 }
 
 const toFile = () => {
