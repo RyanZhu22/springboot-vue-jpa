@@ -67,56 +67,7 @@ const initChart = () => {
     // configure and render your chart
 
     myChart.setOption({
-        // parallelAxis: [
-        //     { dim: 0, name: '2019', data: ["1"," 2", "3", "4", "5", "6", "7"," 8", "9", "10"] },
-        //     { dim: 1, name: '2020' },
-        //     { dim: 2, name: '2021' },
-        //     { dim: 3, name: '2022' },
-        //     {
-        //     dim: 4,
-        //     name: 'Language name',
-        //     type: 'category',
-        //     data: ['c', 'Rust', 'Shell', 'Ruby', 'Php', 'C#', 'C++', 'Go', 'Java', 'Python']
-        //     }
-        // ],
-        // series: {
-        //     type: 'parallel',
-        //     lineStyle: {
-        //         width: 5
-        //     },
-        //     data: [
-        //     [1, 1, 1, 1, 'Python'],
-        //     [2, 2, 2, 2, 'Java'],
-        //     [4, 4, 3, 3, 'Go']
-        //     ]
-        // }
-        // xAxis: {
-        //     type: 'category',
-        //     data: ['2019', '2020', '2021', '2022']
-        // },
-        // yAxis: {
-        //     type: 'value'
-        // },
-        // series: [
-        //     {
-        //         name: 'Python',
-        //         type: 'line',
-        //         step: 'Python',
-        //         data: [1, 1, 1, 1]
-        //     },
-        //     {
-        //         name: 'Step Middle',
-        //         type: 'line',
-        //         step: 'middle',
-        //         data: [220, 282, 201, 234, 290, 430, 410]
-        //         },
-        //     {
-        //         name: 'Step End',
-        //         type: 'line',
-        //         step: 'end',
-        //         data: [450, 432, 401, 454, 590, 530, 510]
-        //     }
-        // ]
+    
         title: {
             text: 'Activity levels of popular topics'
         },

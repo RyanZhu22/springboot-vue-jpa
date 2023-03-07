@@ -6,22 +6,25 @@
     <update id="saveOrUpdate" parameterType="com.example.springboot_restful.entity.Role">
         <choose>
             <when test="id == null">
-                INSERT INTO sys_role (role_name, description)
-                VALUES (#{role_name}, #{description})
+                INSERT INTO sys_role (name, flag)
+                VALUES (#{name}, #{flag})
             </when>
             <otherwise>
                 UPDATE sys_role
-                SET role_name = #{role_name},
-                description = #{description}
+                SET name = #{name},
+                flag = #{flag}
                 WHERE id = #{id}
             </otherwise>
         </choose>
     </update>
     
-    <delete id="removeById" parameterType="int">
-        DELETE FROM sys_role
+    <update id="removeById" parameterType="int">
+        UPDATE sys_role
+        <set>
+            deleted = 1
+        </set>
         where id = #{id}
-    </delete>
+    </update>
 
     <select id="getById" parameterType="int" resultType="com.example.springboot_restful.entity.Role">
         SELECT * FROM sys_role
@@ -31,9 +34,10 @@
     <select id="findPage" parameterType="com.example.springboot_restful.entity.Role" resultType="com.example.springboot_restful.entity.Role">
         SELECT * from sys_role
         <where>
-            <if test="role_name != null and role_name != ''">
-                AND role_name LIKE CONCAT('%', #{role_name}, '%')
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
             </if>
+            deleted like 0
         </where>
         LIMIT #{pageNum}, #{pageSize}
     </select>

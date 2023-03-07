@@ -2,10 +2,14 @@ package com.example.springboot_restful.controller;
 
 import com.example.springboot_restful.common.ResultBody;
 import com.example.springboot_restful.entity.Role;
+import com.example.springboot_restful.service.RoleMenuService;
 import com.example.springboot_restful.service.RoleService;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Map;
 
@@ -16,13 +20,23 @@ public class RoleController {
     @Resource
     private RoleService roleService;
 
+    @Autowired
+    private RoleMenuService roleMenuService;
+
     @PostMapping
     public ResultBody saveOrUpdate(@RequestBody Role role) {
-        roleService.saveOrUpdate(role);
-        return ResultBody.success();
+        try {
+            roleService.saveOrUpdate(role);
+            return ResultBody.success();
+        } catch (Exception e) {
+            if (e instanceof SQLException) {
+                return ResultBody.error("500", "重复添加错误");
+            }
+            return ResultBody.error("500", "添加错误");
+        }
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}")
     public ResultBody removeById(@PathVariable Integer id) {
         roleService.removeById(id);
         return ResultBody.success();
@@ -35,10 +49,21 @@ public class RoleController {
     }
 
     @GetMapping("/page")
-    public ResultBody findPage(@RequestParam(required = false) String role_name,
+    public ResultBody findPage(@RequestParam(required = false) String name,
                                @RequestParam Integer pageNum,
                                @RequestParam Integer pageSize) {
-        Map<String, Object> res = roleService.findPage(role_name, pageNum, pageSize);
+        Map<String, Object> res = roleService.findPage(name, pageNum, pageSize);
         return ResultBody.success(res);
+    }
+
+    @PostMapping("/roleMenu/{roleId}")
+    public ResultBody roleMenu(@PathVariable Integer roleId, @RequestBody List<Integer> menuIds) {
+        roleMenuService.setRoleMenu(roleId, menuIds);
+        return ResultBody.success();
+    }
+
+    @GetMapping("/roleMenu/{roleId}")
+    public ResultBody getRoleMenu(@PathVariable Integer roleId) {
+        return ResultBody.success(roleMenuService.getRoleMenu(roleId));
     }
 }

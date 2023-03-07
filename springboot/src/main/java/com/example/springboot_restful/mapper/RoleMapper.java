@@ -18,5 +18,5 @@ public interface RoleMapper {
 
     int totalCount();
 
-    List<Role> findPage(String role_name, Integer pageNum, Integer pageSize);
+    List<Role> findPage(String name, Integer pageNum, Integer pageSize);
 }

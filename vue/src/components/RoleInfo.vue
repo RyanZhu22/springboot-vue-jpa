@@ -1,7 +1,7 @@
 <template>
     <!-- Btn Section -->
     <div style="padding: 10px 0">
-        <el-input style="width: 200px" placeholder="Please input name" :suffix-icon="Search" v-model="role_name" />
+        <el-input style="width: 200px" placeholder="Please input name" :suffix-icon="Search" v-model="name" />
         <el-button class="ml-5" type="primary" @click="load">Search</el-button>
         <el-button type="warning" @click="reset">Reset</el-button>
     </div>
@@ -18,19 +18,39 @@
     </div>
 
     <!-- Add Pop Form-->
-    <el-dialog v-model="addDialogForm" title="Form" width="30%" center>
+    <el-dialog v-model="addDialogForm" title="Add Form" width="30%" center>
         <el-form label-width="100px" :model="addForm" style="max-width: 460px">
             <el-form-item label="Name">
-                <el-input v-model="addForm.role_name" />
+                <el-input v-model="addForm.name" />
             </el-form-item>
-            <el-form-item label="Description">
-                <el-input v-model="addForm.description" />
+            <el-form-item label="Unique Key">
+                <el-input v-model="addForm.flag" />
             </el-form-item>
         </el-form>
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="addDialogForm = false">Cancel</el-button>
-                <el-button type="primary" @click="addRole">
+                <el-button type="primary" @click="save">
+                    Confirm
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
+
+    <!-- Edit Pop Form-->
+    <el-dialog v-model="editDialogForm" title="Edit Form" width="30%" center>
+        <el-form label-width="100px" :model="editForm" style="max-width: 460px">
+            <el-form-item label="Name">
+                <el-input v-model="editForm.name" />
+            </el-form-item>
+            <el-form-item label="Unique Key">
+                <el-input v-model="editForm.flag" />
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="addDialogForm = false">Cancel</el-button>
+                <el-button type="primary" @click="update">
                     Confirm
                 </el-button>
             </span>
@@ -41,12 +61,12 @@
     <el-table :data="tableData" style="width: 100%">
         <el-table-column type="selection" width="55" />
         <el-table-column type="index" prop="id" label="ID" width="50" />
-        <el-table-column prop="role_name" label="Name" width="180" />
-        <el-table-column prop="description" label="Description" width="180" />
+        <el-table-column prop="name" label="Name" width="180" />
+        <el-table-column prop="flag" label="Unique Key" width="180" />
 
         <el-table-column label="Option" width="500">
             <template #default="scope">
-                <el-button type="primary" @click="assignPermission">Assign Permissions</el-button>
+                <el-button type="primary" @click="assignPermission(scope.row)">Assign Permissions</el-button>
                 <el-button type="success" @click="doEdit(scope.row)">Edit</el-button>
                 <el-popconfirm 
                         confirm-button-text="Yes"
@@ -64,11 +84,11 @@
 
     <!-- Assign Role -->
     <el-dialog v-model="addDialogTree" title="Form" width="30%" center>
-        <el-tree :props="defaultProps" :data="menuList" show-checkbox/>
+        <el-tree ref="treeRef" :props="defaultProps" :data="menuList" node-key="id" show-checkbox />
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="addDialogForm = false">Cancel</el-button>
-                <el-button type="primary" @click="addRole">
+                <el-button type="primary" @click="save">
                     Confirm
                 </el-button>
             </span>
@@ -95,12 +115,20 @@ const tableData = ref(null)
 const pageNum = ref(1)
 const pageSize = ref(5)
 const total = ref(25)
-const role_name = ref('')
+const roleId = ref(null)
+const name = ref('')
 const addDialogForm = ref(false)
+const editDialogForm = ref(false)
 const addDialogTree = ref(false)
 const addForm = reactive({
-    role_name: '',
-    description: '',
+    name: '',
+    flag: '',
+})
+
+const editForm = reactive({
+    id: '',
+    name: '',
+    flag: '',
 })
 
 const menuList = ref(null)
@@ -110,13 +138,15 @@ const defaultProps = {
   label: 'menu_name',
 }
 
+const treeRef = ref()
+
 onMounted(() => {
     load();
 })
 
 
 const load = () => {
-    $axios.get('/api/role/page', { params: { pageNum: pageNum.value, pageSize: pageSize.value, role_name: role_name.value }}).then(res => {
+    $axios.get('/api/role/page', { params: { pageNum: pageNum.value, pageSize: pageSize.value, name: name.value }}).then(res => {
         console.log(res);
         if (res.code === '200') {
             total.value = res.result.total
@@ -147,36 +177,73 @@ const doAdd = () => {
     addDialogForm.value = true
 }
 
+const doEdit = row => {
+    // open editForm
+    editDialogForm.value = true
+    // fill the value of editForm
+    editForm.id = row.id
+    editForm.name = row.name
+    editForm.flag = row.flag
+}
+
 const deleteBatch = () => {
 
 }
 
-const addRole = () => {
-    console.log(addForm);
+const save = () => {
     $axios.post('/api/role', addForm).then(res => {
+        console.log(res);
         if (res.code === '200') {
             ElMessage({
                 message: 'Add Successful',
                 type: 'success'
+            })          
+        } else {
+            ElMessage({
+                message: 'Add Fail',
+                type: 'error'
             })
-            // init addForm value
-            addForm.role_name = ''
-            addForm.description = ''
-            addDialogForm.value = false
-            load()
         }
+        addDialogForm.value = false
+        load()
+    }).catch(err => console.log(err))
+}
 
-    })
+const update = () => {
+    $axios.post('/api/role', editForm).then(res => {
+        console.log(res);
+        if (res.code === '200') {
+            ElMessage({
+                message: 'Edit Successful',
+                type: 'success'
+            })          
+        } else {
+            ElMessage({
+                message: 'Edit Fail',
+                type: 'error'
+            })
+        }
+        editDialogForm.value = false
+        load()
+    }).catch(err => console.log(err))
 }
 
 const confirmDelete = (id) => {
-    $axios.delete('/api/role/' + id).then(res => {
+    $axios.post('/api/role/' + id).then(res => {
         console.log(res)
-        load();
-        ElMessage({
-            message: 'Delete Successful',
-            type: 'success'
-        })
+        if (res.code === '200') {
+            ElMessage({
+                message: 'Delete Successful',
+                type: 'success'
+            })
+            load();
+        } else {
+            ElMessage({
+                message: 'Delete Fail',
+                type: 'error'
+            })
+        }
+
     }).catch(err => console.log("ERROR" + err))
 }
 
@@ -185,11 +252,12 @@ const cancelEvent = () => {
 }
 
 const reset = () => {
-    role_name.value = ''
+    name.value = ''
     load()
 }
 
-const assignPermission = () => {
+const assignPermission = (row) => {
+    roleId.value = row.id
     addDialogTree.value = true
     $axios.get('/api/menu').then(res => {
         console.log(res);

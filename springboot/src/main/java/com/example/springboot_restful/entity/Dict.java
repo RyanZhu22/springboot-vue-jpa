@@ -8,11 +8,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("sys_role")
-public class Role {
-    private Integer id;
+@TableName("sys_dict")
+public class Dict {
 
     private String name;
-    private String flag;
-    private Integer deleted;
+    private String value;
+    private String type;
 }

@@ -8,11 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("sys_role")
-public class Role {
-    private Integer id;
+@TableName("sys_role_menu")
+public class RoleMenu {
 
-    private String name;
-    private String flag;
-    private Integer deleted;
+    private Integer roleId;
+    private Integer menuId;
 }

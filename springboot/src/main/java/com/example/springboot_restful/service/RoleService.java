@@ -13,7 +13,7 @@ public interface RoleService {
 
     Role getById(Integer id);
 
-    Map<String, Object> findPage(String role_name, Integer pageNum, Integer pageSize);
+    Map<String, Object> findPage(String name, Integer pageNum, Integer pageSize);
 
     int totalCount();
 }

@@ -25,9 +25,9 @@
             <el-icon><setting /></el-icon>
             <template #title to="/role">Role Management</template>
         </el-menu-item>
-        <el-menu-item index="5" @click="toMenu">
+        <el-menu-item index="5" @click="toPermission">
             <el-icon><setting /></el-icon>
-            <template #title to="/menu">Menu Management</template>
+            <template #title to="/permission">Permission Management</template>
         </el-menu-item>
         <el-menu-item index="6" @click="toFile">
             <el-icon><setting /></el-icon>
@@ -70,8 +70,8 @@ const toRole = () => {
     router.push('/role')
 }
 
-const toMenu = () => {
-    router.push('/menu')
+const toPermission = () => {
+    router.push('/permission')
 }
 
 const toFile = () => {

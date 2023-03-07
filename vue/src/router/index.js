@@ -31,9 +31,9 @@ const routes = [
         component: () => import("../components/RoleInfo.vue"),
       },
       {
-        path: "menu",
-        name: "menu",
-        component: () => import("../components/MenuInfo.vue"),
+        path: "permission",
+        name: "permission",
+        component: () => import("../components/PermissionInfo.vue"),
       },
       {
         path: "file",
