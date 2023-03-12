@@ -1,8 +1,8 @@
 package com.example.springboot_restful.service.impl;
 
-import com.example.springboot_restful.entity.RoleMenu;
-import com.example.springboot_restful.mapper.RoleMenuMapper;
-import com.example.springboot_restful.service.RoleMenuService;
+import com.example.springboot_restful.entity.RolePermission;
+import com.example.springboot_restful.mapper.RolePermissionMapper;
+import com.example.springboot_restful.service.RolePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,19 +10,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class RoleMenuServiceImpl implements RoleMenuService {
+public class RolePermissionServiceImpl implements RolePermissionService {
 
     @Autowired
-    private RoleMenuMapper roleMenuMapper;
+    private RolePermissionMapper rolePermissionMapper;
 
     @Override
     public int deleteByRoleId(Integer roleId) {
-        return roleMenuMapper.deleteByRoleId(roleId);
+        return rolePermissionMapper.deleteByRoleId(roleId);
     }
 
     @Override
-    public int insert(RoleMenu roleMenu) {
-        return roleMenuMapper.insert(roleMenu);
+    public int insert(RolePermission rolePermission) {
+        return rolePermissionMapper.insert(rolePermission);
     }
 
     @Transactional
@@ -33,20 +33,27 @@ public class RoleMenuServiceImpl implements RoleMenuService {
 
         // 再把前端传输的菜单id数组绑定在当前角色id
         for (Integer menuId : menuIds) {
-            RoleMenu roleMenu = new RoleMenu();
-            roleMenu.setRoleId(roleId);
-            roleMenu.setMenuId(menuId);
-            this.insert(roleMenu);
+            RolePermission rolePermission = new RolePermission();
+            rolePermission.setRoleId(roleId);
+            rolePermission.setPermissionId(menuId);
+            this.insert(rolePermission);
         }
     }
 
     @Override
     public List<Integer> selectByRoleId(Integer roleId) {
-        return roleMenuMapper.selectByRoleId(roleId);
+        return rolePermissionMapper.selectByRoleId(roleId);
     }
 
     @Override
     public List<Integer> getRoleMenu(Integer roleId) {
         return this.selectByRoleId(roleId);
     }
+
+    @Override
+    public List<RolePermission> findAll() {
+        return rolePermissionMapper.findAll();
+    }
+
+
 }

@@ -33,5 +33,5 @@ public class User implements Serializable {
 
     private String avatar_url;
 
-    private Integer is_delete;
+    private Integer deleted;
 }

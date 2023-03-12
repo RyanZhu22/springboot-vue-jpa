@@ -21,15 +21,21 @@ public class PermissionController {
     private DictService dictService;
 
     @GetMapping
-    public ResultBody findAll(@RequestParam String name) {
-        List<Permission> permissionList = permissionService.findAll(name);
+    public ResultBody findAll() {
+        List<Permission> permissionList = permissionService.findAll();
         return ResultBody.success(permissionList);
     }
 
     @GetMapping("/tree")
-    public ResultBody tree(@RequestParam String name) {
-        List<Permission> permissionList = permissionService.tree(name);
+    public ResultBody tree() {
+        List<Permission> permissionList = permissionService.tree();
         return ResultBody.success(permissionList);
+    }
+
+    @PutMapping
+    public ResultBody updateHide(@RequestBody Permission permission) {
+        permissionService.updateHide(permission);
+        return ResultBody.success();
     }
 
     @PostMapping

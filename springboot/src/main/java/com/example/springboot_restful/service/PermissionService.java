@@ -16,9 +16,11 @@ public interface PermissionService {
 
     Map<String, Object> findPage(Integer pageNum, Integer pageSize);
 
-    List<Permission> findAll(String name);
+    List<Permission> findAll();
 
-    List<Permission> tree(String name);
+    List<Permission> tree();
 
     List<Permission> childrenTree(Integer pid, List<Permission> allData);
+
+    int updateHide(Permission permission);
 }

@@ -2,6 +2,7 @@ package com.example.springboot_restful.mapper;
 
 
 import com.example.springboot_restful.entity.Role;
+import com.example.springboot_restful.entity.RolePermission;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -19,4 +20,8 @@ public interface RoleMapper {
     int totalCount();
 
     List<Role> findPage(String name, Integer pageNum, Integer pageSize);
+
+    List<Role> findAll();
+
+
 }

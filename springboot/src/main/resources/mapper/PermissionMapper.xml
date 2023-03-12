@@ -39,7 +39,10 @@
     </select>
 
     <select id="findAll" resultType="com.example.springboot_restful.entity.Permission">
-        SELECT * from sys_permission WHERE name like concat('%', #{name}, '%') AND deleted = 0
+        SELECT * from sys_permission WHERE deleted = 0
     </select>
 
+    <update id="updateHide" parameterType="com.example.springboot_restful.entity.Permission">
+        UPDATE sys_permission SET hide = #{hide} WHERE id = #{id}
+    </update>
 </mapper>

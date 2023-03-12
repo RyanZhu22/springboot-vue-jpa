@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface UserMapper{
 
-    @Select("SELECT * from sys_user where is_delete = 0")
+    @Select("SELECT * from sys_user where deleted = 0")
     List<User> findAll();
 
 
@@ -37,16 +37,16 @@ public interface UserMapper{
     @Select("SELECT * from sys_user where username like concat('%', #{username}, '%') " +
             "and email like concat('%', #{email}, '%') " +
             "and address like concat('%', #{address}, '%') " +
-            "and is_delete like concat('%', #{is_delete}, '%') " +
+            "and deleted like concat('%', #{deleted}, '%') " +
             "limit #{pageNum}, #{pageSize}")
-    List<User> selectPage(Integer pageNum, Integer pageSize, String username, String email, String address, Integer is_delete);
+    List<User> selectPage(Integer pageNum, Integer pageSize, String username, String email, String address, Integer deleted);
 
     // 查询总条数
     @Select("SELECT count(*) from sys_user where username like concat('%', #{username}, '%')" +
             "and email like concat('%', #{email}, '%') " +
             "and address like concat('%', #{address}, '%')" +
-            "and is_delete like concat('%', #{is_delete}, '%')")
-    Integer selectTotal(String username, String email, String address, Integer is_delete);
+            "and deleted like concat('%', #{deleted}, '%')")
+    Integer selectTotal(String username, String email, String address, Integer deleted);
 
     // 插入（批量）
     int saveBatch(List<User> list);

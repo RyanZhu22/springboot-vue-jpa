@@ -19,6 +19,8 @@ public interface PermissionMapper {
 
     List<Permission> findPage(Integer pageNum, Integer pageSize);
 
-    List<Permission> findAll(String name);
+    List<Permission> findAll();
+
+    int updateHide(Permission permission);
 
 }

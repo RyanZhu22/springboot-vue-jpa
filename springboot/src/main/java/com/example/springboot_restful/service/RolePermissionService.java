@@ -1,18 +1,20 @@
 package com.example.springboot_restful.service;
 
-import com.example.springboot_restful.entity.RoleMenu;
+import com.example.springboot_restful.entity.RolePermission;
 
 import java.util.List;
 
-public interface RoleMenuService {
+public interface RolePermissionService {
 
     int deleteByRoleId(Integer roleId);
 
-    int insert(RoleMenu roleMenu);
+    int insert(RolePermission rolePermission);
 
     void setRoleMenu(Integer roleId, List<Integer> menuIds);
 
     List<Integer> selectByRoleId(Integer roleId);
 
     List<Integer> getRoleMenu(Integer roleId);
+
+    List<RolePermission> findAll();
 }

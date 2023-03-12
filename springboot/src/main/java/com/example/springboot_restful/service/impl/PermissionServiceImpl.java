@@ -43,32 +43,32 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public List<Permission> findAll(String name) {
-        return permissionMapper.findAll(name);
+    public List<Permission> findAll() {
+        return permissionMapper.findAll();
     }
 
     @Override
-    public List<Permission> tree(String name) {
-        List<Permission> allData = this.findAll(name);
-        List<Permission> parentList = allData.stream().filter(p -> p.getPid() == null).collect(Collectors.toList());
-        for (Permission permission : parentList) {
-            List<Permission> level2List = allData.stream().filter(p -> Objects.equals(p.getPid(), permission.getId())).collect(Collectors.toList());
-            permission.setChildren(level2List);
-            for (Permission permission1 : level2List) {
-                List<Permission> level3List = allData.stream().filter(p -> Objects.equals(p.getPid(), permission1.getId())).collect(Collectors.toList());
-                permission1.setChildren(level3List);
-            }
-        }
-        return parentList;
+    public List<Permission> tree() {
+        List<Permission> allData = this.findAll();
+        return childrenTree(null, allData);
     }
 
     @Override
     public List<Permission> childrenTree(Integer pid, List<Permission> allData) {
         List<Permission> list = new ArrayList<>();
-        if (pid == null) {
-            return allData.stream().filter(p -> p.getPid() == null).collect(Collectors.toList());
+        for (Permission permission : allData) {
+            if (Objects.equals(permission.getPid(), pid)) { // null, 一级
+                list.add(permission);
+                List<Permission> childrenTree = childrenTree(permission.getId(), allData); // 递归 摘取二级节点\三级
+                permission.setChildren(childrenTree);
+            }
         }
-        return allData.stream().filter(p -> Objects.equals(p.getPid(), pid)).collect(Collectors.toList());
+        return list;
+    }
+
+    @Override
+    public int updateHide(Permission permission) {
+        return permissionMapper.updateHide(permission);
     }
 
 

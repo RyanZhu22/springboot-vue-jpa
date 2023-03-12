@@ -25,6 +25,7 @@ public class Permission {
     private Integer pid;
     private Integer type;
     private Integer deleted;
+    private Boolean hide;
     private LocalDateTime create_time;
     private LocalDateTime update_time;
 

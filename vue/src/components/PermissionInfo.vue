@@ -1,11 +1,5 @@
 <template>
   <!-- Btn Section -->
-  <div style="padding: 10px 0">
-    <el-input style="width: 200px" placeholder="Please input name" :suffix-icon="Search" v-model="permission_name" />
-    <el-button class="ml-5" type="primary" @click="load">Search</el-button>
-    <el-button type="warning" @click="reset">Reset</el-button>
-  </div>
-
   <div>
     <el-button type="primary" @click="doAdd()">
       Add
@@ -45,10 +39,8 @@
         <el-input v-model="addForm.permission" />
       </el-form-item>
       <el-form-item label="Parent ID">
-        <el-select v-model="addForm.pid" placeholder="Please select">
-          <el-option v-for="item in options" :key="item" :label="item" :value="item">
-          </el-option>
-        </el-select>
+        <el-tree-select v-model="addForm.pid" :data="tableData"
+        :props="{ label: 'name', value: 'id'}" :render-after-expand="false" check-strictly/>
       </el-form-item>
       <el-form-item label="Type">
         <el-radio-group v-model="addForm.type" class="ml-4">
@@ -72,7 +64,7 @@
   <!-- TODO 展开箭头在id那 -->
   <el-table :data="tableData" style="width: 100%" row-key="id"  default-expand-all>
     <el-table-column type="selection" width="55" />
-    <el-table-column type="index" prop="id" label="ID" width="50" />
+    <el-table-column prop="id" type="index"  label="ID" width="50" />
     <el-table-column prop="name" label="Name" width="180" />
     <el-table-column prop="path" label="Access Path" width="180" />
     <el-table-column prop="page" label="Page Path" width="180" />
@@ -87,6 +79,13 @@
         <el-tag type="success" v-if="scope.row.type === 3">Page Button</el-tag>
       </template>
     </el-table-column>
+
+    <el-table-column prop="hide" label="Hide" width="180" >
+      <template #default="scope">
+        <el-switch v-model="scope.row.hide" @change="changeHide(scope.row)"></el-switch>
+      </template>
+    </el-table-column>
+
     <el-table-column label="Option" width="300">
       <template #default="scope">
         <el-button type="primary" @click="doAdd(scope.row.id)" v-if="!scope.row.pid">Add Subpermission</el-button>
@@ -103,24 +102,40 @@
 
   <!-- Edit Pop Form -->
   <el-dialog v-model="editDialogForm" title="permission Information" width="50%" center>
-    <el-form label-width="100px" style="max-width: 460px">
+    <el-form label-width="100px" :model="editForm" style="max-width: 460px">
       <el-form-item label="Name">
-        <el-input v-model="editForm.permission_name" />
+        <el-input v-model="editForm.name" />
       </el-form-item>
-      <el-form-item label="Path">
-        <el-input v-model="editForm.permission_path" />
+      <el-form-item label="Access Path" v-if="editForm.type === 1 || editForm.type === 2">
+        <el-input v-model="editForm.path" />
       </el-form-item>
-      <el-form-item label="Icon">
-        <el-select clearable v-model="editForm.icon" placeholder="Please select">
-          <el-option v-for="item in options" :key="item.value" :label="item.name" :value="item.value">
-            <component :is="item.value" style="width: 12px;" /> {{ item.name }}
-          </el-option>
+      <el-form-item label="Page Path" v-if="editForm.type === 1 || editForm.type === 2">
+        <el-input v-model="editForm.page" />
+      </el-form-item>
+      <el-form-item label="Orders" v-if="editForm.type === 1 || editForm.type === 2">
+        <el-input-number v-model="editForm.orders" :min="1" />
+      </el-form-item>
+      <el-form-item label="icon" v-if="editForm.type === 1 || editForm.type === 2">
+        <el-select v-model="editForm.icon" placeholder="Please select">
+          <el-option v-for="item in icons" :key="item" :label="item" :value="item" />
         </el-select>
       </el-form-item>
-      <el-form-item label="Description">
-        <el-input v-model="editForm.description" />
+      <el-form-item label="Permission" v-if="editForm.type === 2 || editForm.type === 3">
+        <el-input v-model="editForm.permission" />
+      </el-form-item>
+      <el-form-item label="Parent ID">
+        <el-tree-select v-model="editForm.pid" :data="tableData" @node-click="handleNodeClick"
+        :props="{ label: 'name', value: 'id'}" :render-after-expand="false" check-strictly/>
+      </el-form-item>
+      <el-form-item label="Type">
+        <el-radio-group v-model="editForm.type" class="ml-4">
+          <el-radio :label="1" size="large">Permission Catalog</el-radio>
+          <el-radio :label="2" size="large">Permission Page</el-radio>
+          <el-radio :label="3" size="large">Page Button</el-radio>
+        </el-radio-group>
       </el-form-item>
     </el-form>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="editDialogForm = false">Cancel</el-button>
@@ -134,13 +149,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, inject } from "vue";
+import { ref, reactive, onMounted, inject, nextTick } from "vue";
 import { ElMessage } from 'element-plus'
 import { Search, CirclePlus, Remove, User } from '@element-plus/icons-vue'
 
 const $axios = inject('$axios')
 
 const tableData = ref(null)
+const treeData = ref(null)
 const permission_name = ref('')
 const options = ref([])
 // DO NOT Pop up Form 
@@ -159,10 +175,14 @@ const addForm = reactive({
 
 const editForm = reactive({
   id: '',
-  permission_name: '',
-  permission_path: '',
+  name: '',
+  path: '',
+  page: '',
+  orders: 0,
   icon: '',
-  description: '',
+  permission: '',
+  pid: null,
+  type: null,
 })
 
 // icons dict
@@ -175,7 +195,7 @@ onMounted(() => {
 })
 
 const load = () => {
-  $axios.get('/api/permission/tree', { params: { name: permission_name.value } }).then(res => {
+  $axios.get('/api/permission/tree').then(res => {
     console.log(res);
     if (res.code === '200') {
       tableData.value = res.result
@@ -187,10 +207,15 @@ const doEdit = (row) => {
   console.log(row);
   editDialogForm.value = true
   editForm.id = row.id
-  editForm.permission_name = row.permission_name
-  editForm.permission_path = row.permission_path
+  editForm.name = row.name
+  editForm.path = row.path
   editForm.icon = row.icon
-  editForm.description = row.description
+  editForm.page = row.page
+  editForm.permission = row.permission
+  editForm.orders = row.orders
+  editForm.pid = row.pid
+  editForm.type = row.type
+
 
   $axios.get('/api/permission/icons').then(res => {
     console.log(res);
@@ -214,12 +239,35 @@ const updateForm = () => {
   })
 }
 
+const changeHide = (row) => {
+  $axios.put('/api/permission', row).then(res => {
+    console.log(res);
+    if (res.code === '200') {
+      ElMessage.success('Change Successful')
+      load()
+    } else {
+      ElMessage.error('Change Failed')
+    }
+  })
+}
+
 const doAdd = (id) => {
   console.log(id);
   console.log(addForm.value);
   addDialogForm.value = true
   addForm.pid = id
   console.log(addForm);
+}
+
+const handleNodeClick = (data) => {
+  if (data.id === editForm.id) {
+    ElMessage.warning("You do not select parent node")
+    nextTick(() => {
+      editForm.pid = null
+      console.log(editForm);
+    })
+
+  }
 }
 
 const deleteBatch = () => {

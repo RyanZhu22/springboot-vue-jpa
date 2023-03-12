@@ -124,10 +124,10 @@ public class UserController {
                                         @RequestParam(defaultValue = "") String username,
                                         @RequestParam(defaultValue = "") String email,
                                         @RequestParam(defaultValue = "") String address,
-                                        @RequestParam("is_delete") Integer is_delete) {
+                                        @RequestParam("deleted") Integer deleted) {
         pageNum = (pageNum - 1) * pageSize;
-        List<User> data = userMapper.selectPage(pageNum, pageSize, username, email, address, is_delete);
-        Integer total = userMapper.selectTotal(username, email, address, is_delete);
+        List<User> data = userMapper.selectPage(pageNum, pageSize, username, email, address, deleted);
+        Integer total = userMapper.selectTotal(username, email, address, deleted);
         Map<String, Object> res = new HashMap<>();
         res.put("data", data);
         res.put("total", total);

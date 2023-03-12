@@ -1,16 +1,18 @@
 package com.example.springboot_restful.mapper;
 
-import com.example.springboot_restful.entity.RoleMenu;
+import com.example.springboot_restful.entity.RolePermission;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-public interface RoleMenuMapper {
+public interface RolePermissionMapper {
 
     int deleteByRoleId(Integer roleId);
 
-    int insert(RoleMenu roleMenu);
+    int insert(RolePermission rolePermission);
 
     List<Integer> selectByRoleId(Integer roleId);
+
+    List<RolePermission> findAll();
 }
