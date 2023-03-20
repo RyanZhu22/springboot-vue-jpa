@@ -50,4 +50,8 @@
         SELECT * FROM sys_role WHERE deleted = 0
     </select>
 
+    <select id="getByFlag" parameterType="string" resultType="com.example.springboot_restful.entity.Role">
+        SELECT * FROM sys_role WHERE flag = #{flag}
+    </select>
+
 </mapper>

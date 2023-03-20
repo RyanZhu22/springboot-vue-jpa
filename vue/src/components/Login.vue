@@ -40,20 +40,12 @@
                         <el-input v-model="registerForm.confirmPassword" type="password" autocomplete="off" />
                     </el-form-item>
 
-                    <el-form-item label="Nickname" prop="nickname" style="margin-top: 20px;">
-                        <el-input v-model="registerForm.nickname" type="text" autocomplete="off" />
+                    <el-form-item label="Name" prop="name" style="margin-top: 20px;">
+                        <el-input v-model="registerForm.name" type="text" autocomplete="off" />
                     </el-form-item>
 
                     <el-form-item label="Email" prop="Email" style="margin-top: 20px;">
                         <el-input v-model="registerForm.email" type="email" autocomplete="off" />
-                    </el-form-item>
-
-                    <el-form-item label="Phone" prop="phone" style="margin-top: 20px;">
-                        <el-input v-model="registerForm.phone" type="text" autocomplete="off" />
-                    </el-form-item>
-
-                    <el-form-item label="Address" prop="address" style="margin-top: 20px;">
-                        <el-input v-model="registerForm.address" type="text" autocomplete="off" />
                     </el-form-item>
 
                     <el-form-item style="margin-top: 40px;">
@@ -70,7 +62,7 @@
 import { reactive, ref, inject} from 'vue';
 import { ElMessage } from 'element-plus'
 import router from '../router'
-import useUserStore from "../store/user"
+import { useUserStore } from "../store/user"
 const $axios = inject('$axios')
 
 const loginFormRef = ref()
@@ -89,10 +81,8 @@ const registerForm = reactive({
     username: '',
     password: '',
     confirmPassword: '',
-    nickname: '',
+    name: '',
     email: '',
-    phone: '',
-    address: '',
 })
 
 // username validation
@@ -179,9 +169,12 @@ const validatation = (formEl) => {
 const submitLoginForm = async (formEl) => {
     // Front-end validate
     validatation(formEl)
-
-    await userStore.login(loginForm)
-    router.push('/home')
+    
+    // await userStore.login(loginForm)
+    await $axios.post('/api/login', loginForm).then(res => {
+        console.log(res);
+    })
+    // router.push('/home')
 }
 
 const toRegister = () => {
@@ -193,21 +186,21 @@ const submitRegisterForm = (formEl) => {
     validatation(formEl)
     console.log(registerForm);
     // Post request to Back-end validate
-    $axios.post('/api/user/register', registerForm).then(res => {
+    $axios.post('/api/register', registerForm).then(res => {
         console.log(res);
-        if (res.code === "200") {
-            ElMessage({
-                message: 'Register Successfully',
-                type: 'success',
-            })
-            loginForm.username = registerForm.username
-            showLogin.value = true
-        } else if (res.code === '500') {
-            ElMessage({
-                message: 'Register Failed',
-                type: 'error',
-            })
-        }
+        // if (res.code === "200") {
+        //     ElMessage({
+        //         message: 'Register Successfully',
+        //         type: 'success',
+        //     })
+        //     loginForm.username = registerForm.username
+        //     showLogin.value = true
+        // } else if (res.code === '500') {
+        //     ElMessage({
+        //         message: 'Register Failed',
+        //         type: 'error',
+        //     })
+        // }
     }).catch(err => console.log(err))
 }
 

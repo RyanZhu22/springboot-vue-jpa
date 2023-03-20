@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import { useUserStore } from "../store/user";
 
 
 // 2. 定义一些路由
@@ -62,5 +63,20 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes, // `routes: routes` 的缩写
 });
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  const store = useUserStore() // 得到用户对象信息
+  const user = store.managerInfo.user
+  const hasUser = user && user.id
+  const noPermissionPaths = ['/login', '/register'] // 定义无需登录路由
+  if (!hasUser && !noPermissionPaths.includes(to.path)) { // 用户没登录
+    // 获取缓存的用户数据
+    // 如果to.path === '/login'的时候 ！noPermissionPaths.includes(to.path) 是返回false的，也就不会进next("/login")
+    next('/login')
+  } else {
+    next()
+  }
+})
 
 export default router;

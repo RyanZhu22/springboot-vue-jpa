@@ -4,6 +4,10 @@
 <!--namespace指向mapper.xml所对应的Mapper接口-->
 <!--不建议直接修改password-->
 <mapper namespace="com.example.springboot_restful.mapper.UserMapper">
+    <select id="findAll" resultType="com.example.springboot_restful.entity.User">
+        SELECT * FROM sys_user WHERE deleted = 0
+    </select>
+
     <update id="update">
         update sys_user
         <set>
@@ -31,6 +35,14 @@
     <select id="findEchartsData">
 
     </select>
+
+    <select id="findByUsername" resultType="com.example.springboot_restful.entity.User">
+        SELECT * FROM sys_user WHERE username = #{username}
+    </select>
+
+    <delete id="deleteByIdT">
+        DELETE sys_user WHERE id = #{id}
+    </delete>
 
     <update id="deleteByIdF">
         update sys_user
@@ -62,4 +74,27 @@
     <select id="registerByUsername" resultType="com.example.springboot_restful.entity.User">
         select * from sys_user where username = #{username}
     </select>
+
+    <select id="selectPage" resultType="com.example.springboot_restful.entity.User">
+        SELECT * FROM sys_user
+        <where>
+            username like concat('%', #{username}, '%') AND
+            email like concat('%', #{email}, '%') AND
+            address like concat('%', #{address}, '%') AND
+            deleted like concat('%', #{deleted}, '%')
+            limit #{pageNum}, #{pageSize}
+        </where>
+    </select>
+
+    <select id="selectTotal" resultType="int">
+        SELECT count(*) FROM sys_user WHERE username LIKE concat('%', #{username}, '%') AND
+        email like concat('%', #{email}, '%') AND
+        address like concat('%', #{address}, '%') AND
+        deleted like concat('%', #{deleted}, '%')
+    </select>
+
+    <insert id="saveUser" parameterType="com.example.springboot_restful.entity.User">
+        INSERT INTO sys_user (username, password, name, email, uid, avatar, address, role)
+        VALUES (#{username}, #{password}, #{name}, #{email}, #{uid}, #{avatar}, #{address}, #{role})
+    </insert>
 </mapper>

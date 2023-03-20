@@ -22,4 +22,6 @@ public interface RoleService {
     List<Role> findAll();
 
     void savePermissions(Integer roleId, List<Integer> permissionIds) throws ServerException;
+
+    Role getByFlag(String flag);
 }

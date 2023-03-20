@@ -1,36 +1,46 @@
 // 1. 引入
 import axios from "axios";
-import { ElMessage } from 'element-plus'
+import { ElMessage } from "element-plus";
 import router from "../router";
+import { useUserStore } from "../store/user";
 
 // Request
-axios.interceptors.request.use(config => {
-    let user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {}
-    if (user) {
-        config.headers['token'] = user.token;
-    }
-    return config
-}, err => {
-    return Promise.reject(err)
-})
+axios.interceptors.request.use(
+  (config) => {
+    config.headers["Content-Type"] = "application/json;charset=utf-8";
+    config.headers["Authorization"] = useUserStore().getBearerToken; // 设置请求头
+    return config;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
 
 // Response
-axios.interceptors.response.use(response => {
-    const res = response.data
+axios.interceptors.response.use(
+  (response) => {
+    let res = response.data;
 
-    if (res.code === '401') {
-        ElMessage({
-            message: res.message,
-            type: 'error',
-        })
+    // 返回文件
+    if (response.config.responseType === "blob") {
+      return res;
+    }
+    // 兼容服务端返回的字符串数据
+    if (typeof res === "string") {
+      res = res ? JSON.parse(res) : res;
+    }
+    // 权限不通过弹出提示
+    if (res.code === "401") {
+        ElMessage.error(res.msg)
         router.push('/login')
     }
-    return res
-}, err => {
-    return Promise.reject(err)
-})
-  
-
+    return res;
+  },
+  (err) => {
+    console.log("ERROR" + err); // for debug
+    return Promise.reject(err);
+  }
+);
 
 // 4. 导出
-export default axios
+export default axios;

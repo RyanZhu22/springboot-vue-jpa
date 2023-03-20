@@ -89,4 +89,9 @@ public class RoleServiceImpl implements RoleService {
             rolePermissionService.insert(rolePermission);
         });
     }
+
+    @Override
+    public Role getByFlag(String flag) {
+        return roleMapper.getByFlag(flag);
+    }
 }

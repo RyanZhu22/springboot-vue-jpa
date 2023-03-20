@@ -35,8 +35,8 @@
           <el-option v-for="item in icons" :key="item" :label="item" :value="item" />
         </el-select>
       </el-form-item>
-      <el-form-item label="Permission" v-if="addForm.type === 2 || addForm.type === 3">
-        <el-input v-model="addForm.permission" />
+      <el-form-item label="Auth" v-if="addForm.type === 2 || addForm.type === 3">
+        <el-input v-model="addForm.auth" />
       </el-form-item>
       <el-form-item label="Parent ID">
         <el-tree-select v-model="addForm.pid" :data="tableData"
@@ -69,9 +69,9 @@
     <el-table-column prop="path" label="Access Path" width="180" />
     <el-table-column prop="page" label="Page Path" width="180" />
     <el-table-column prop="orders" label="Orders" width="180" />
-    <el-table-column prop="icon" label="icon" width="180" />
-    <el-table-column prop="permission" label="Permission" width="180" />
-    <el-table-column prop="pid" label="Parent ID" width="180" />
+    <el-table-column prop="icon" label="icon" width="100" />
+    <el-table-column prop="auth" label="Auth" width="100" />
+    <el-table-column prop="pid" label="Parent ID" width="100" />
     <el-table-column prop="type" label="Type" width="180" >
       <template #default="scope">
         <el-tag type="warning" v-if="scope.row.type === 1">Menu Catelog</el-tag>
@@ -120,8 +120,8 @@
           <el-option v-for="item in icons" :key="item" :label="item" :value="item" />
         </el-select>
       </el-form-item>
-      <el-form-item label="Permission" v-if="editForm.type === 2 || editForm.type === 3">
-        <el-input v-model="editForm.permission" />
+      <el-form-item label="Auth" v-if="editForm.type === 2 || editForm.type === 3">
+        <el-input v-model="editForm.auth" />
       </el-form-item>
       <el-form-item label="Parent ID">
         <el-tree-select v-model="editForm.pid" :data="tableData" @node-click="handleNodeClick"
@@ -168,7 +168,7 @@ const addForm = reactive({
   page: '',
   orders: 0,
   icon: '',
-  permission: '',
+  auth: '',
   pid: null,
   type: null,
 })
@@ -180,7 +180,7 @@ const editForm = reactive({
   page: '',
   orders: 0,
   icon: '',
-  permission: '',
+  auth: '',
   pid: null,
   type: null,
 })
@@ -226,6 +226,7 @@ const doEdit = (row) => {
 }
 
 const updateForm = () => {
+  console.log(editForm);
   $axios.post('/api/permission', editForm).then(res => {
     console.log(res);
     if (res.code === '200') {

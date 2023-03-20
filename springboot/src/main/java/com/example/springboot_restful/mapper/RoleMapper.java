@@ -23,5 +23,5 @@ public interface RoleMapper {
 
     List<Role> findAll();
 
-
+    Role getByFlag(String flag);
 }

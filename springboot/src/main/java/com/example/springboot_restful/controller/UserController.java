@@ -5,19 +5,12 @@ import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.example.springboot_restful.common.ResultBody;
-import com.example.springboot_restful.common.error.BusinessException;
-import com.example.springboot_restful.common.error.CommonEnum;
-import com.example.springboot_restful.common.error.ResultEnum;
-import com.example.springboot_restful.common.handler.MsgException;
-import com.example.springboot_restful.controller.dto.UserDTO;
-import com.example.springboot_restful.common.JsonResult;
 import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.mapper.UserMapper;
 import com.example.springboot_restful.service.UserService;
-import com.example.springboot_restful.utils.TokenUtils;
+import com.example.springboot_restful.service.impl.UserServiceImpl;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,25 +53,9 @@ public class UserController {
 
     // RequestBody 将前端JSON数据转化成Java对象
     @PostMapping
-    public ResultBody save(@RequestBody User user) throws ResultBody {
-        // 新增或更新
-        return userService.save(user);
-    }
-
-    /**
-     * 登录接口
-     */
-    @PostMapping("/login")
-    public ResultBody login(@RequestBody UserDTO userDTO) throws ResultBody {
-        String username = userDTO.getUsername();
-        String password = userDTO.getPassword();
-        // hutool校验username是否未空
-        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
-            return ResultBody.error("500", "Username is empty");
-        }
-        UserDTO dto = userService.login(userDTO);
-
-        return ResultBody.success(dto);
+    public ResultBody save(@RequestBody User user) {
+        userService.saveUser(user);
+        return ResultBody.success();
     }
 
     /**
@@ -96,7 +73,7 @@ public class UserController {
         }
 
         if (userMapper.registerByUsername(user.getUsername()) == null) {
-            userMapper.insert(user);
+            userService.saveUser(user);
             return ResultBody.success();
         } else {
             return ResultBody.error("500", "Username already exists");
