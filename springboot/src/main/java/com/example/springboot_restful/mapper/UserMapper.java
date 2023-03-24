@@ -14,6 +14,10 @@ public interface UserMapper{
 
     User findByUserId(Integer id);
 
+    User findByUid(String uid);
+
+    User findByEmail(String email);
+
     User registerByUsername(String username);
 
     // 真删除

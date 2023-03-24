@@ -40,6 +40,14 @@
         SELECT * FROM sys_user WHERE username = #{username}
     </select>
 
+    <select id="findByEmail" resultType="com.example.springboot_restful.entity.User">
+        SELECT * FROM sys_user WHERE email = #{email}
+    </select>
+
+    <select id="findByUid" resultType="com.example.springboot_restful.entity.User">
+        SELECT * FROM sys_user WHERE uid = #{uid}
+    </select>
+
     <delete id="deleteByIdT">
         DELETE sys_user WHERE id = #{id}
     </delete>

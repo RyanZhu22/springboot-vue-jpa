@@ -1,13 +1,12 @@
 package com.example.springboot_restful.service.impl;
 
+import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.digest.BCrypt;
 import com.example.springboot_restful.common.Constants;
-import com.example.springboot_restful.common.ResultBody;
+import com.example.springboot_restful.common.enums.EmailCodeEnum;
 import com.example.springboot_restful.controller.dto.LoginDTO;
 import com.example.springboot_restful.controller.dto.UserRequest;
 import com.example.springboot_restful.entity.Permission;
@@ -19,6 +18,8 @@ import com.example.springboot_restful.service.PermissionService;
 import com.example.springboot_restful.service.RolePermissionService;
 import com.example.springboot_restful.service.RoleService;
 import com.example.springboot_restful.service.UserService;
+import com.example.springboot_restful.utils.RedisUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService {
     public LoginDTO login(UserRequest user) {
         User dbUser;
         try {
-            dbUser = userMapper.findByUsername(user.getUsername());
+            dbUser = this.findByUsername(user.getUsername());
         } catch (Exception e) {
             throw new RuntimeException("Database exception");
         }
@@ -64,7 +66,7 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException("用户名或密码错误");
         }
         // Sa-Token Login Authentication
-        StpUtil.login(user.getUid());
+        StpUtil.login(dbUser.getId());
         // Caching user objects at login
         StpUtil.getSession().set(Constants.LOGIN_USER_KEY, dbUser);
         // get the token
@@ -88,6 +90,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void register(UserRequest user) {
+        // save email key and value
+//        String emailKey = Constants.EMAIL_CODE + EmailCodeEnum.REGISTER.getValue() + user.getEmail();
+//        RedisUtils.setCacheObject(emailKey, user.getEmailCode());
         try {
             User saveUser = new User();
             // 把请求数据的属性copy给存储数据库的属性
@@ -97,6 +102,58 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new RuntimeException("Database exception", e);
         }
+    }
+
+    @Override
+    public void logout(String uid) {
+        // current session logout
+        StpUtil.logout(uid);
+        log.info("User {} exit successful", uid);
+    }
+
+    // TODO Why check email in passwordReset and check uid in passwordChange
+    // The user doesn't know their current password, so we use email and check email
+    @Override
+    public String passwordReset(UserRequest user) {
+        // validate user through check email
+        String email = user.getEmail();
+        User dbUser = userMapper.findByEmail(email);
+        if (dbUser == null) {
+            throw new ServiceException("The user is not found");
+        }
+        // TODO why we should validate email validation code
+
+        // new password
+        String newPwd = "123";
+        // set new password to dbUser
+        dbUser.setPassword(BCrypt.hashpw(newPwd));
+        // save into database
+        try {
+            update(dbUser);
+        } catch (Exception e) {
+            throw new RuntimeException("Register Failed", e);
+        }
+        return newPwd;
+    }
+
+    // TODO Why check email in passwordReset and check uid in passwordChange
+    // The user doesn't know their current password
+    @Override
+    public void passwordChange(UserRequest user) {
+        // validate user through uid
+        User dbUser = userMapper.findByUid(user.getUid());
+        if (dbUser == null) {
+            throw new ServiceException("The user is not found");
+        }
+        boolean checkPwd = BCrypt.checkpw(user.getPassword(), dbUser.getPassword());
+        if (!checkPwd) {
+            throw new ServiceException("The old password is incorrect");
+        }
+        // get the new password
+        String newPwd = user.getNewPassword();
+        // encrypted password
+        dbUser.setPassword(BCrypt.hashpw(newPwd));
+        update(dbUser); // update database
     }
 
     @Override
@@ -126,6 +183,23 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Register Failed", e);
         }
         return user;
+    }
+
+    /**
+     * 校验邮箱
+     * @param emailKey
+     * @param emailCode
+     */
+    @Override
+    public void validateEmail(String emailKey, String emailCode) {
+        Integer code = RedisUtils.getCacheObject(emailKey);
+        if (code == null) {
+            throw new ServiceException("Verification code is invalid");
+        }
+        if (!emailCode.equals(code.toString())) {
+            throw new ServiceException("验证码错误");
+        }
+        RedisUtils.deleteObject(emailKey); // 清除缓存
     }
 
     private List<Permission> getPermissions(String roleFlag) {
@@ -178,6 +252,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByUserId(Integer id) {
         return userMapper.findByUserId(id);
+    }
+
+    @Override
+    public User findByUid(String uid) {
+        return userMapper.findByUid(uid);
     }
 
     @Override

@@ -99,10 +99,7 @@
       <change beforePath="$PROJECT_DIR$/target/classes/com/example/springboot_restful/mapper/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/springboot_restful/mapper/UserMapper.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/example/springboot_restful/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/springboot_restful/service/UserService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/mapper/UserMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/mapper/UserMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../vue/src/axios/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../vue/src/axios/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../vue/src/components/PermissionInfo.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../vue/src/components/PermissionInfo.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../vue/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../vue/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../vue/src/store/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/../vue/src/store/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vue/src/components/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../vue/src/components/Login.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -170,6 +167,9 @@
     ]
   }
 }</component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
   <component name="RunManager">
     <configuration name="SpringbootRestfulApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <option name="ACTIVE_PROFILES" />
@@ -203,7 +203,13 @@
       <workItem from="1672411780015" duration="211000" />
       <workItem from="1678793470822" duration="2995000" />
       <workItem from="1678876615913" duration="4604000" />
-      <workItem from="1679306996711" duration="6805000" />
+      <workItem from="1679306996711" duration="7119000" />
+      <workItem from="1679365573324" duration="3704000" />
+      <workItem from="1679393541471" duration="3600000" />
+      <workItem from="1679482113903" duration="2559000" />
+      <workItem from="1679533703674" duration="7779000" />
+      <workItem from="1679571295220" duration="3060000" />
+      <workItem from="1679623558988" duration="4397000" />
     </task>
     <servers />
   </component>

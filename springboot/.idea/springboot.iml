@@ -121,8 +121,13 @@
     <orderEntry type="library" name="Maven: com.github.jsqlparser:jsqlparser:2.0" level="project" />
     <orderEntry type="library" name="Maven: cn.dev33:sa-token-spring-boot-starter:1.34.0" level="project" />
     <orderEntry type="library" name="Maven: cn.dev33:sa-token-servlet:1.34.0" level="project" />
-    <orderEntry type="library" name="Maven: cn.dev33:sa-token-core:1.34.0" level="project" />
     <orderEntry type="library" name="Maven: cn.dev33:sa-token-spring-boot-autoconfig:1.34.0" level="project" />
+    <orderEntry type="library" name="Maven: cn.dev33:sa-token-jwt:1.33.0" level="project" />
+    <orderEntry type="library" name="Maven: cn.dev33:sa-token-core:1.33.0" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-jwt:5.8.9" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-json:5.8.9" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-core:5.8.9" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-crypto:5.8.9" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-data-redis:3.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-redis:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-keyvalue:3.0.0" level="project" />
@@ -140,6 +145,7 @@
     <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.86.Final" level="project" />
     <orderEntry type="library" name="Maven: io.projectreactor:reactor-core:3.5.1" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-pool2:2.11.1" level="project" />
     <orderEntry type="library" name="Maven: org.springdoc:springdoc-openapi-ui:1.6.4" level="project" />
     <orderEntry type="library" name="Maven: org.springdoc:springdoc-openapi-webmvc-core:1.6.4" level="project" />
     <orderEntry type="library" name="Maven: org.springdoc:springdoc-openapi-common:1.6.4" level="project" />

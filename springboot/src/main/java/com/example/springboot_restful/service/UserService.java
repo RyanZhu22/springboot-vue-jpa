@@ -2,10 +2,8 @@ package com.example.springboot_restful.service;
 
 
 import com.example.springboot_restful.controller.dto.LoginDTO;
-import com.example.springboot_restful.controller.dto.UserDTO;
 import com.example.springboot_restful.controller.dto.UserRequest;
 import com.example.springboot_restful.entity.User;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,6 +14,8 @@ public interface UserService {
     User findByUsername(String username);
 
     User findByUserId(Integer id);
+
+    User findByUid(String uid);
 
     User registerByUsername(String username);
 
@@ -39,5 +39,13 @@ public interface UserService {
 
     void register(UserRequest user);
 
+    void logout(String uid);
+
+    String passwordReset(UserRequest user);
+
+    void passwordChange(UserRequest user);
+
     User saveUser(User user);
+
+    void validateEmail(String emailKey, String emailCode);
 }
