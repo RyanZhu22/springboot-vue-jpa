@@ -1,7 +1,5 @@
 package com.example.springboot_restful.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +10,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("sys_permission")
 public class Permission {
 
     private Integer id;
@@ -29,6 +26,5 @@ public class Permission {
     private LocalDateTime create_time;
     private LocalDateTime update_time;
 
-    @TableField(exist = false)
     private List<Permission> children;
 }

@@ -1,14 +1,9 @@
 package com.example.springboot_restful.controller;
 
-import cn.hutool.core.util.StrUtil;
 import com.example.springboot_restful.common.ResultBody;
 import com.example.springboot_restful.controller.dto.LoginDTO;
-import com.example.springboot_restful.controller.dto.UserDTO;
 import com.example.springboot_restful.controller.dto.UserRequest;
-import com.example.springboot_restful.service.RolePermissionService;
-import com.example.springboot_restful.service.RoleService;
 import com.example.springboot_restful.service.UserService;
-import com.example.springboot_restful.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,5 @@
 package com.example.springboot_restful.service.impl;
 
-import cn.dev33.satoken.secure.BCrypt;
-import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -62,15 +60,15 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException("The user is not found");
         }
         // decrypted based on BCrypt and then to verity
-        if (!BCrypt.checkpw(user.getPassword(), dbUser.getPassword())) {
-            throw new ServiceException("用户名或密码错误");
-        }
-        // Sa-Token Login Authentication
-        StpUtil.login(dbUser.getId());
-        // Caching user objects at login
-        StpUtil.getSession().set(Constants.LOGIN_USER_KEY, dbUser);
-        // get the token
-        String tokenValue = StpUtil.getTokenInfo().getTokenValue();
+//        if (!BCrypt.checkpw(user.getPassword(), dbUser.getPassword())) {
+//            throw new ServiceException("用户名或密码错误");
+//        }
+//        // Sa-Token Login Authentication
+//        StpUtil.login(dbUser.getId());
+//        // Caching user objects at login
+//        StpUtil.getSession().set(Constants.LOGIN_USER_KEY, dbUser);
+//        // get the token
+//        String tokenValue = StpUtil.getTokenInfo().getTokenValue();
 
         // 查询用户的菜单树（2层）
         String flag = dbUser.getRole();
@@ -107,7 +105,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void logout(String uid) {
         // current session logout
-        StpUtil.logout(uid);
+//        StpUtil.logout(uid);
         log.info("User {} exit successful", uid);
     }
 
@@ -126,7 +124,7 @@ public class UserServiceImpl implements UserService {
         // new password
         String newPwd = "123";
         // set new password to dbUser
-        dbUser.setPassword(BCrypt.hashpw(newPwd));
+//        dbUser.setPassword(BCrypt.hashpw(newPwd));
         // save into database
         try {
             update(dbUser);
@@ -145,14 +143,14 @@ public class UserServiceImpl implements UserService {
         if (dbUser == null) {
             throw new ServiceException("The user is not found");
         }
-        boolean checkPwd = BCrypt.checkpw(user.getPassword(), dbUser.getPassword());
-        if (!checkPwd) {
-            throw new ServiceException("The old password is incorrect");
-        }
+//        boolean checkPwd = BCrypt.checkpw(user.getPassword(), dbUser.getPassword());
+//        if (!checkPwd) {
+//            throw new ServiceException("The old password is incorrect");
+//        }
         // get the new password
         String newPwd = user.getNewPassword();
         // encrypted password
-        dbUser.setPassword(BCrypt.hashpw(newPwd));
+//        dbUser.setPassword(BCrypt.hashpw(newPwd));
         update(dbUser); // update database
     }
 
@@ -174,7 +172,7 @@ public class UserServiceImpl implements UserService {
             user.setPassword(Constants.DEFAULT_PASSWORD);
         }
         // 加密用户密码
-        user.setPassword(BCrypt.hashpw(user.getPassword())); // BCrypt hash加密
+//        user.setPassword(BCrypt.hashpw(user.getPassword())); // BCrypt hash加密
         // 设置uid 唯一标识
         user.setUid(IdUtil.fastSimpleUUID());
         try {
