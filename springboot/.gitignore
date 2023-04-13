@@ -1,0 +1,38 @@
+# Compiled class files and resources
+/target/
+/.classpath
+/.project
+/.settings/
+/.vscode/
+*.class
+*.iml
+
+# Log files
+*.log
+
+# Maven wrapper
+/.mvnw
+/.mvnw.cmd
+/.maven/
+/maven-wrapper.jar
+/maven-wrapper.properties
+
+# Gradle wrapper
+/.gradle/
+/gradlew
+/gradlew.bat
+/gradle/wrapper/gradle-wrapper.jar
+/gradle/wrapper/gradle-wrapper.properties
+
+# IDE specific
+.idea/
+*.ipr
+*.iws
+*.bak
+
+# IntelliJ IDEA specific files
+*.iml
+*.iws
+*.ipr
+.idea/
+
