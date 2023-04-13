@@ -6,39 +6,44 @@ import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.example.springboot_restful.common.ResultBody;
 import com.example.springboot_restful.entity.User;
-import com.example.springboot_restful.mapper.UserMapper;
 import com.example.springboot_restful.service.UserService;
-import com.example.springboot_restful.service.impl.UserServiceImpl;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private UserService userService;
+
 
     @GetMapping("/id")
     public ResultBody findOne(@RequestParam("id") Integer id) {
-        User user = userMapper.findByUserId(id);
+        Optional<User> user = userService.findById(id);
         return ResultBody.success(user);
     }
 
     @PostMapping("/update")
     public ResultBody update(User user) {
-        int update = userMapper.update(user);
-        if (update != 1) {
+        User updateUser = userService.update(user);
+        if (updateUser == null) {
             return ResultBody.error("500", "Internet Error");
         }
 
@@ -47,7 +52,7 @@ public class UserController {
 
     @GetMapping
     public List<User> findAll() {
-        List<User> all = userMapper.findAll();
+        List<User> all = userService.findAll();
         return all;
     }
 
@@ -72,7 +77,7 @@ public class UserController {
             return ResultBody.error("500", "username or password is null");
         }
 
-        if (userMapper.registerByUsername(user.getUsername()) == null) {
+        if (userService.findByUsername(user.getUsername()) == null) {
             userService.saveUser(user);
             return ResultBody.success();
         } else {
@@ -82,33 +87,37 @@ public class UserController {
 
     // 真删除接口
     @DeleteMapping(value = "/{id}")
-    public Integer deleteByIdT(@PathVariable("id") Integer id) {
-        return userMapper.deleteByIdT(id);
+    public ResultBody deleteByIdT(@PathVariable("id") Integer id) {
+        userService.deleteById(id);
+        return ResultBody.success();
     }
 
     // 假删除接口
     @PostMapping(value = "/{id}")
-    public Integer deleteByIdF(@PathVariable("id") Integer id) {
-        return userMapper.deleteByIdF(id);
+    public ResultBody deleteByIdF(@PathVariable("id") Integer id) {
+        userService.updateDeleted(id);
+        return ResultBody.success();
     }
 
     // 分页查询接口
     // 接口路径： /user/page?pageNum=1&pageSize=10
     // LIMIT (pageNum - 1) * pageSize
     @GetMapping("/page")
-    public Map<String, Object> findPage(@RequestParam Integer pageNum,
-                                        @RequestParam Integer pageSize,
-                                        @RequestParam(defaultValue = "") String username,
-                                        @RequestParam(defaultValue = "") String email,
-                                        @RequestParam(defaultValue = "") String address,
-                                        @RequestParam("deleted") Integer deleted) {
-        pageNum = (pageNum - 1) * pageSize;
-        List<User> data = userMapper.selectPage(pageNum, pageSize, username, email, address, deleted);
-        Integer total = userMapper.selectTotal(username, email, address, deleted);
+    public Map<String, Object> findPage(@RequestParam(value = "username", required = false) String username,
+                                        @RequestParam(value = "email", required = false) String email,
+                                        @RequestParam(value = "address", required = false) String address,
+                                        @RequestParam(value = "deleted", required = false) Integer deleted,
+                                        @RequestParam(value = "page", defaultValue = "0") int page,
+                                        @RequestParam(value = "size", defaultValue = "10") int size,
+                                        @RequestParam(value = "sort", defaultValue = "id") String sort,
+                                        @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+        Page<User> data = userService.selectPage(username, email, address, deleted, pageable);
+        Long total = userService.selectTotal(username, email, address, deleted);
         Map<String, Object> res = new HashMap<>();
         res.put("data", data);
         res.put("total", total);
-
+        log.info(String.valueOf(pageable), data, total);
         return res;
     }
 
@@ -116,7 +125,7 @@ public class UserController {
     @GetMapping("/export")
     public void export(HttpServletResponse response) throws Exception {
         // 从数据库查询数据
-        List<User> list = userMapper.findAll();
+        List<User> list = userService.findAll();
         // 在内存操作，写出浏览器
         ExcelWriter writer = ExcelUtil.getWriter(true);
         // 自定义标题别名
@@ -149,13 +158,12 @@ public class UserController {
      * @throws Exception
      */
     @PostMapping("/import")
-    public int imp(MultipartFile file) throws Exception {
+    public ResultBody imp(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();
         ExcelReader reader = ExcelUtil.getReader(inputStream);
         List<User> list = reader.readAll(User.class);
-        System.out.println(list);
-        int result = userService.saveBatch(list);
-        return result;
+        List<User> res = userService.saveBatch(list);
+        return ResultBody.success();
     }
 
 }

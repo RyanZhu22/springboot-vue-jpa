@@ -4,23 +4,25 @@ import com.example.springboot_restful.entity.Permission;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface PermissionService {
-    int saveOrUpdate(Permission permission);
 
-    int removeById(Integer id);
+    Permission save(Permission permission);
 
-    Permission getById(Integer id);
+    void deleteById(Integer id);
 
-    int totalCount();
-
-    Map<String, Object> findPage(Integer pageNum, Integer pageSize);
+    Permission findById(Integer id);
 
     List<Permission> findAll();
+
+    Long count();
+
+    Permission updateHide(Integer id, Boolean hide);
+
+    Map<String, Object> findPage(Integer pageNum, Integer pageSize);
 
     List<Permission> tree();
 
     List<Permission> childrenTree(Integer pid, List<Permission> allData);
-
-    int updateHide(Permission permission);
 }

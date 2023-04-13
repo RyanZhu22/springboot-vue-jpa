@@ -1,8 +1,8 @@
 package com.example.springboot_restful.controller;
 
 import com.example.springboot_restful.common.ResultBody;
-import com.example.springboot_restful.controller.dto.LoginDTO;
-import com.example.springboot_restful.controller.dto.UserRequest;
+import com.example.springboot_restful.dto.LoginResponse;
+import com.example.springboot_restful.dto.UserRequest;
 import com.example.springboot_restful.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,21 +15,6 @@ public class WebController {
 
     @Autowired
     private UserService userService;
-
-
-    @Operation(summary = "User Login")
-    @PostMapping("/login")
-    public ResultBody login(@RequestBody UserRequest user) {
-        LoginDTO res = userService.login(user);
-        return ResultBody.success(res);
-    }
-
-    @Operation(summary = "User Register")
-    @PostMapping("/register")
-    public ResultBody register(@RequestBody UserRequest user) {
-        userService.register(user);
-        return ResultBody.success();
-    }
 
     @Operation(summary = "User Logout")
     @GetMapping("/logout/{uid}")
@@ -44,12 +29,5 @@ public class WebController {
         String newPwd = userService.passwordReset(user);
         return ResultBody.success(newPwd);
     }
-
-//    @Operation(summary = "Password Change")
-//    @PostMapping("/password/change/")
-//    public ResultBody passwordChange(@RequestBody UserRequest user) {
-//        userService.passwordChange(user);
-//        return ResultBody.success();
-//    }
 
 }

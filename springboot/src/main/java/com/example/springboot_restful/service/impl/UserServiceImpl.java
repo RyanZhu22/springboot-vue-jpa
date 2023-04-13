@@ -4,43 +4,44 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.example.springboot_restful.common.Constants;
-import com.example.springboot_restful.common.enums.EmailCodeEnum;
-import com.example.springboot_restful.controller.dto.LoginDTO;
-import com.example.springboot_restful.controller.dto.UserRequest;
+import com.example.springboot_restful.dto.LoginResponse;
+import com.example.springboot_restful.dto.UserRequest;
 import com.example.springboot_restful.entity.Permission;
 import com.example.springboot_restful.entity.Role;
 import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.exception.ServiceException;
-import com.example.springboot_restful.mapper.UserMapper;
+import com.example.springboot_restful.repository.UserRepository;
 import com.example.springboot_restful.service.PermissionService;
 import com.example.springboot_restful.service.RolePermissionService;
 import com.example.springboot_restful.service.RoleService;
 import com.example.springboot_restful.service.UserService;
 import com.example.springboot_restful.utils.RedisUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
+
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final RolePermissionService rolePermissionService;
+    private final RoleService roleService;
+    private final PermissionService permissionService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    @Autowired
-    private RolePermissionService rolePermissionService;
-
-    @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private PermissionService permissionService;
 
     /**
      * 登录业务逻辑
@@ -48,30 +49,9 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public LoginDTO login(UserRequest user) {
-        User dbUser;
-        try {
-            dbUser = this.findByUsername(user.getUsername());
-        } catch (Exception e) {
-            throw new RuntimeException("Database exception");
-        }
-        // verity the user
-        if (dbUser == null) {
-            throw new ServiceException("The user is not found");
-        }
-        // decrypted based on BCrypt and then to verity
-//        if (!BCrypt.checkpw(user.getPassword(), dbUser.getPassword())) {
-//            throw new ServiceException("用户名或密码错误");
-//        }
-//        // Sa-Token Login Authentication
-//        StpUtil.login(dbUser.getId());
-//        // Caching user objects at login
-//        StpUtil.getSession().set(Constants.LOGIN_USER_KEY, dbUser);
-//        // get the token
-//        String tokenValue = StpUtil.getTokenInfo().getTokenValue();
-
+    public LoginResponse getUserMenusAndAuths(User user) {
         // 查询用户的菜单树（2层）
-        String flag = dbUser.getRole();
+        String flag = String.valueOf(user.getRole());
         List<Permission> all = getPermissions(flag); // 水平
         // 页面菜单权限
         List<Permission> menus = getTreePermissions(all); // 树形
@@ -79,28 +59,9 @@ public class UserServiceImpl implements UserService {
         List<Permission> auths = all.stream().filter(permission -> permission.getType() == 3)
                 .collect(Collectors.toList());
         // 返回登录数据
-        return LoginDTO.builder().user(dbUser).menus(menus).auths(auths).build();
+        return LoginResponse.builder().user(user).menus(menus).auths(auths).build();
     }
 
-    /**
-     * 主页业务逻辑
-     * @param user
-     */
-    @Override
-    public void register(UserRequest user) {
-        // save email key and value
-//        String emailKey = Constants.EMAIL_CODE + EmailCodeEnum.REGISTER.getValue() + user.getEmail();
-//        RedisUtils.setCacheObject(emailKey, user.getEmailCode());
-        try {
-            User saveUser = new User();
-            // 把请求数据的属性copy给存储数据库的属性
-            BeanUtils.copyProperties(user, saveUser);
-            // 存储用户信息
-            saveUser(saveUser);
-        } catch (Exception e) {
-            throw new RuntimeException("Database exception", e);
-        }
-    }
 
     @Override
     public void logout(String uid) {
@@ -115,16 +76,13 @@ public class UserServiceImpl implements UserService {
     public String passwordReset(UserRequest user) {
         // validate user through check email
         String email = user.getEmail();
-        User dbUser = userMapper.findByEmail(email);
-        if (dbUser == null) {
-            throw new ServiceException("The user is not found");
-        }
+        User dbUser = userRepository.findByEmail(email).orElseThrow();
         // TODO why we should validate email validation code
 
         // new password
         String newPwd = "123";
         // set new password to dbUser
-//        dbUser.setPassword(BCrypt.hashpw(newPwd));
+//        .setPassword(BCrypt.hashpw(newPwd));
         // save into database
         try {
             update(dbUser);
@@ -139,7 +97,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void passwordChange(UserRequest user) {
         // validate user through uid
-        User dbUser = userMapper.findByUid(user.getUid());
+        User dbUser = userRepository.findByUid(user.getUid());
         if (dbUser == null) {
             throw new ServiceException("The user is not found");
         }
@@ -155,9 +113,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
     public User saveUser(User user) {
         // 校验username是否唯一
-        User dbUser = userMapper.findByUsername(user.getUsername());
+        User dbUser = userRepository.findByUsername(user.getUsername());
         if (dbUser != null) {
             throw new ServiceException("用户已存在");
         }
@@ -176,7 +139,7 @@ public class UserServiceImpl implements UserService {
         // 设置uid 唯一标识
         user.setUid(IdUtil.fastSimpleUUID());
         try {
-            userMapper.saveUser(user);
+            userRepository.save(user);
         } catch (Exception e) {
             throw new RuntimeException("Register Failed", e);
         }
@@ -202,9 +165,9 @@ public class UserServiceImpl implements UserService {
 
     private List<Permission> getPermissions(String roleFlag) {
         // 通过唯一标识Flag获取role
-        Role role = roleService.getByFlag(roleFlag);
+        Role role = roleService.findByFlag(roleFlag);
         // 通过roleId获取对应的permissions
-        List<Integer> rolePermissions = rolePermissionService.selectByRoleId(role.getId());
+        List<Integer> rolePermissions = rolePermissionService.findPermissionIdsByRoleId(role.getId());
         List<Permission> permissionList = permissionService.findAll();
         List<Permission> all = new ArrayList<>(); // 水平的菜单树
         for (Integer permissionId : rolePermissions) {
@@ -228,63 +191,59 @@ public class UserServiceImpl implements UserService {
         return parentList;
     }
 
-    // 批量删除
-    public int saveBatch(List<User> list) {
-        try {
-            return userMapper.saveBatch(list);
-        } catch (Exception e) {
-            return -1;
-        }
+    public List<User> saveBatch(List<User> users) {
+        return userRepository.saveAll(users);
     }
+
 
     @Override
     public List<User> findAll() {
-        return userMapper.findAll();
+        return userRepository.findAll();
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
     public User findByUsername(String username) {
-        return userMapper.findByUsername(username);
+        return userRepository.findByUsername(username);
     }
 
     @Override
-    public User findByUserId(Integer id) {
-        return userMapper.findByUserId(id);
+    public Optional<User> findById(Integer id) {
+        return userRepository.findById(id);
+    }
+
+
+    @Override
+    public void deleteById(Integer id) {
+        userRepository.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public void updateDeleted(Integer id) {
+        userRepository.updateDeleted(id);
+    }
+
+
+    @Override
+    public User update(User user) {
+        User existingUser = userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+        existingUser.updateFields(user);
+        return userRepository.save(existingUser);
     }
 
     @Override
-    public User findByUid(String uid) {
-        return userMapper.findByUid(uid);
+    public Page<User> selectPage(String username, String email, String address, Integer deleted, Pageable pageable) {
+        return userRepository.selectPage(username, email, address, deleted, pageable);
     }
 
     @Override
-    public User registerByUsername(String username) {
-        return userMapper.registerByUsername(username);
-    }
-
-    @Override
-    public int deleteByIdT(Integer id) {
-        return userMapper.deleteByIdT(id);
-    }
-
-    @Override
-    public int deleteByIdF(Integer id) {
-        return userMapper.deleteByIdF(id);
-    }
-
-    @Override
-    public int update(User user) {
-        return userMapper.update(user);
-    }
-
-    @Override
-    public List<User> selectPage(Integer pageNum, Integer pageSize, String username, String email, String address, Integer deleted) {
-        return userMapper.selectPage(pageNum, pageSize, username, email, address, deleted);
-    }
-
-    @Override
-    public Integer selectTotal(String username, String email, String address, Integer deleted) {
-        return userMapper.selectTotal(username, email, address, deleted);
+    public Long selectTotal(String username, String email, String address, Integer deleted) {
+        return userRepository.countByConditions(username, email, address, deleted);
     }
 
 }

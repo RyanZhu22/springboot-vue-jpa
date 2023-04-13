@@ -5,16 +5,15 @@ import com.example.springboot_restful.entity.RolePermission;
 import java.util.List;
 
 public interface RolePermissionService {
+    RolePermission save(RolePermission rolePermission);
 
-    int deleteByRoleId(Integer roleId);
+    void deleteByRoleId(Integer roleId);
 
-    int insert(RolePermission rolePermission);
+    List<RolePermission> setRoleMenu(Integer roleId, List<Integer> permissionIds);
 
-    void setRoleMenu(Integer roleId, List<Integer> menuIds);
+    List<Integer> findPermissionIdsByRoleId(Integer roleId);
 
-    List<Integer> selectByRoleId(Integer roleId);
-
-    List<Integer> getRoleMenu(Integer roleId);
+    List<RolePermission> findRoleMenu(Integer permissionId);
 
     List<RolePermission> findAll();
 }

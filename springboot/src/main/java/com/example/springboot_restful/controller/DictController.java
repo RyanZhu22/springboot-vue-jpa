@@ -2,7 +2,7 @@ package com.example.springboot_restful.controller;
 
 import com.example.springboot_restful.common.ResultBody;
 import com.example.springboot_restful.service.DictService;
-import jakarta.websocket.server.PathParam;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

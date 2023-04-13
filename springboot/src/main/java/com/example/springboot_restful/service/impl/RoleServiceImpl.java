@@ -1,57 +1,74 @@
 package com.example.springboot_restful.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.example.springboot_restful.entity.Permission;
 import com.example.springboot_restful.entity.Role;
 import com.example.springboot_restful.entity.RolePermission;
-import com.example.springboot_restful.mapper.RoleMapper;
+import com.example.springboot_restful.repository.RoleRepository;
 import com.example.springboot_restful.service.RolePermissionService;
 import com.example.springboot_restful.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.rmi.ServerException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    @Autowired
-    private RoleMapper roleMapper;
+    private final RoleRepository roleRepository;
+    private final RolePermissionService rolePermissionService;
 
     @Autowired
-    private RolePermissionService rolePermissionService;
-
-    @Override
-    public int saveOrUpdate(Role role) {
-        return roleMapper.saveOrUpdate(role);
+    public RoleServiceImpl(RoleRepository roleRepository, RolePermissionService rolePermissionService) {
+        this.roleRepository = roleRepository;
+        this.rolePermissionService = rolePermissionService;
     }
 
     @Override
-    public int removeById(Integer id) {
-        return roleMapper.removeById(id);
+    public Role save(Role role) {
+        return roleRepository.save(role);
     }
 
     @Override
-    public Role getById(Integer id) {
-        return roleMapper.getById(id);
+    public void deleteById(Integer id) {
+        roleRepository.deleteById(id);
+    }
+
+    @Override
+    public Role findById(Integer id) {
+        Optional<Role> optionalRole = roleRepository.findById(id);
+        return optionalRole.orElseThrow(() -> new RuntimeException("Role not found with id: " + id));
+    }
+
+    @Override
+    public List<Role> findAll() {
+        return roleRepository.findAll();
+    }
+
+    @Override
+    public long count() {
+        return roleRepository.count();
     }
 
     @Override
     public Map<String, Object> findPage(String name, Integer pageNum, Integer pageSize) {
-        int total = this.totalCount();
-        pageNum = (pageNum - 1) * pageSize;
-        List<Role> roleList = roleMapper.findPage(name, pageNum, pageSize);;
+        Long total = this.count();
+        Page<Role> page = roleRepository.findAll(PageRequest.of(pageNum, pageSize));
+        List<Role> roleList = page.getContent();
 
         List<RolePermission> rolePermissionList = rolePermissionService.findAll();
         // for each role list
         roleList.forEach(v -> {
             List<Integer> permissionIds = rolePermissionList.stream().filter(r -> r.getRoleId().equals(v.getId()))
-                    .map(RolePermission::getPermissionId).collect(Collectors.toList());
+                .map(RolePermission::getPermissionId).collect(Collectors.toList());
             v.setPermissionIds(permissionIds);
         });
 
@@ -63,13 +80,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public int totalCount() {
-        return roleMapper.totalCount();
-    }
-
-    @Override
-    public List<Role> findAll() {
-        return roleMapper.findAll();
+    public Role findByFlag(String flag) {
+        return roleRepository.findByFlag(flag);
     }
 
     @Transactional
@@ -86,12 +98,7 @@ public class RoleServiceImpl implements RoleService {
             RolePermission rolePermission = new RolePermission();
             rolePermission.setRoleId(roleId);
             rolePermission.setPermissionId(v);
-            rolePermissionService.insert(rolePermission);
+            rolePermissionService.save(rolePermission);
         });
-    }
-
-    @Override
-    public Role getByFlag(String flag) {
-        return roleMapper.getByFlag(flag);
     }
 }

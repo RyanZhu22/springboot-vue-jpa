@@ -10,17 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.rmi.ServerException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/role")
 public class RoleController {
 
-    @Resource
+    @Autowired
     private RoleService roleService;
 
     @Autowired
@@ -52,7 +50,7 @@ public class RoleController {
 
     @PostMapping
     public ResultBody saveOrUpdate(@RequestBody Role role) throws ServerException {
-        roleService.saveOrUpdate(role);
+        roleService.save(role);
         // save the relationship between role and permission
         roleService.savePermissions(role.getId(), role.getPermissionIds());
         return ResultBody.success();
@@ -60,13 +58,13 @@ public class RoleController {
 
     @PostMapping("/{id}")
     public ResultBody removeById(@PathVariable Integer id) {
-        roleService.removeById(id);
+        roleService.deleteById(id);
         return ResultBody.success();
     }
 
     @GetMapping("/{id}")
     public ResultBody findOne(@PathVariable Integer id) {
-        Role role = roleService.getById(id);
+        Role role = roleService.findById(id);
         return ResultBody.success(role);
     }
 
@@ -87,6 +85,6 @@ public class RoleController {
 
     @GetMapping("/roleMenu/{roleId}")
     public ResultBody getRoleMenu(@PathVariable Integer roleId) {
-        return ResultBody.success(rolePermissionService.getRoleMenu(roleId));
+        return ResultBody.success(rolePermissionService.findRoleMenu(roleId));
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/permission")
@@ -33,27 +32,27 @@ public class PermissionController {
     }
 
     @PutMapping
-    public ResultBody updateHide(@RequestBody Permission permission) {
-        permissionService.updateHide(permission);
+    public ResultBody updateHide(@RequestParam Integer id, @RequestParam Boolean hide) {
+        permissionService.updateHide(id, hide);
         return ResultBody.success();
     }
 
     @PostMapping
     public ResultBody saveOrUpdate(@RequestBody Permission Permission) {
-        permissionService.saveOrUpdate(Permission);
+        permissionService.save(Permission);
         return ResultBody.success();
     }
 
     @PostMapping("/{id}")
     public ResultBody removeById(@PathVariable Integer id) {
-        permissionService.removeById(id);
+        permissionService.deleteById(id);
         return ResultBody.success();
     }
 
     @GetMapping("/{id}")
-    public ResultBody findOne(@PathVariable Integer id) {
-        Permission Permission = permissionService.getById(id);
-        return ResultBody.success(Permission);
+    public ResultBody findById(@PathVariable Integer id) {
+        Permission permission = permissionService.findById(id);
+        return ResultBody.success(permission);
     }
 
     @GetMapping("/icons")

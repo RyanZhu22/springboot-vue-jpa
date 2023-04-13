@@ -9,19 +9,19 @@ import java.util.Map;
 
 public interface RoleService {
 
-    int saveOrUpdate(Role role);
+    Role save(Role role);
 
-    int removeById(Integer id);
+    void deleteById(Integer id);
 
-    Role getById(Integer id);
+    Role findById(Integer id);
 
     Map<String, Object> findPage(String name, Integer pageNum, Integer pageSize);
 
-    int totalCount();
+    long count();
 
     List<Role> findAll();
 
-    void savePermissions(Integer roleId, List<Integer> permissionIds) throws ServerException;
+    Role findByFlag(String flag);
 
-    Role getByFlag(String flag);
+    void savePermissions(Integer roleId, List<Integer> permissionIds) throws ServerException;
 }

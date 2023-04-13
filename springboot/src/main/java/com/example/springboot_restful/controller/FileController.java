@@ -6,10 +6,11 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.example.springboot_restful.common.ResultBody;
 import com.example.springboot_restful.entity.Files;
-import com.example.springboot_restful.service.FileService;
-import jakarta.annotation.Resource;
+import com.example.springboot_restful.service.FilesService;
+import com.example.springboot_restful.service.FilesService;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,8 +32,8 @@ public class FileController {
     @Value("${files.upload.path}")
     private String fileUploadPath;
 
-    @Resource
-    private FileService fileService;
+    @Autowired
+    private FilesService filesService;
 
     /**
      * 文件上传接口
@@ -81,9 +82,9 @@ public class FileController {
         saveFile.setFile_size(size / 1024);
         saveFile.setMd5(md5);
         saveFile.setUrl(url);
-        saveFile.setIs_delete(false);
+        saveFile.setIsDelete(false);
         saveFile.setEnable(true);
-        fileService.insert(saveFile);
+        filesService.save(saveFile);
         return url;
     }
 
@@ -113,10 +114,7 @@ public class FileController {
      */
     @DeleteMapping("/{id}")
     public ResultBody delete(@PathVariable Integer id) {
-        int i = fileService.deleteByF(id);
-        if (i != 1) {
-            return ResultBody.error("500", "Delete Failed");
-        }
+        filesService.deleteById(id);
         return ResultBody.success();
     }
 
@@ -127,7 +125,7 @@ public class FileController {
      */
     @PostMapping("/del/batch/t")
     public ResultBody deleteBatch(@RequestBody List<Integer> ids) {
-        fileService.deleteBatch(ids);
+        filesService.deleteBatch(ids);
         return ResultBody.success("200", "Delete Successful");
     }
 
@@ -142,8 +140,8 @@ public class FileController {
     }
 
     @PostMapping("/update")
-    public ResultBody updateEnable(@RequestBody Files files) {
-        fileService.updateEnable(files);
+    public ResultBody updateEnable(@RequestParam Integer id, Boolean enable) {
+        filesService.updateEnable(id, enable);
         return ResultBody.success("200", "Update Successful");
     }
 
@@ -152,8 +150,7 @@ public class FileController {
      */
     private Files getFileByMd5(String md5) {
         // 查询MD5是否存在
-        List<Files> filesList = fileService.selectByMd5(md5);
-        return filesList.size() == 0 ? null : filesList.get(0);
+        return filesService.findByMd5(md5);
     }
 
     /**
@@ -166,11 +163,11 @@ public class FileController {
     public ResultBody findPage(@RequestParam("pageNum") Integer pageNum,
                                @RequestParam("pageSize") Integer pageSize) {
         // 查询所有数据
-        int total = fileService.findAll();
+        Long total = filesService.count();
         // pageNum从0开始数
         pageNum = pageNum -1;
         // 查询相关页数的数据
-        List<Files> filesList = fileService.findPage(pageNum, pageSize);
+        List<Files> filesList = filesService.findPage(pageNum, pageSize);
         // map格式放回数据
         Map<String, Object> res = new HashMap<>();
         res.put("total", total);

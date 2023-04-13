@@ -1,21 +1,34 @@
 package com.example.springboot_restful.controller;
 
-import com.example.springboot_restful.common.ResultBody;
+import com.example.springboot_restful.entity.User;
+import com.example.springboot_restful.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/api/v1/demo")
 public class TestController {
 
-    @GetMapping("/user")
-    public ResultBody helloUser() {
-        return ResultBody.success("Hello User");
+    private final UserService userService;
+
+    @Autowired
+    public TestController(UserService userService) {
+        this.userService = userService;
     }
 
-    @GetMapping("/admin")
-    public ResultBody helloAdmin() {
-        return ResultBody.success("Hello Admin");
+    @GetMapping
+    public ResponseEntity<String> sayHello() {
+        return ResponseEntity.ok("Hello from secured endpoint");
+    }
+
+    @GetMapping("/user")
+    public Optional<User> findByUsername(@RequestParam(value = "email") String email) {
+        return userService.findByEmail(email);
     }
 }
