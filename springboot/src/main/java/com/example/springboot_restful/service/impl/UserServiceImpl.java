@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 登录业务逻辑
+     *
      * @param user
      * @return
      */
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
         List<Permission> menus = getTreePermissions(all); // 树形
         // 页面按钮权限
         List<Permission> auths = all.stream().filter(permission -> permission.getType() == 3)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
         // 返回登录数据
         return LoginResponse.builder().user(user).menus(menus).auths(auths).build();
     }
@@ -120,8 +121,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveUser(User user) {
         // 校验username是否唯一
-        User dbUser = userRepository.findByUsername(user.getUsername());
-        if (dbUser != null) {
+        Optional<User> dbUser = userRepository.findByUsername(user.getUsername());
+        if (dbUser.isPresent()) {
             throw new ServiceException("用户已存在");
         }
         // 校验是否有name
@@ -148,6 +149,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 校验邮箱
+     *
      * @param emailKey
      * @param emailCode
      */
@@ -172,7 +174,7 @@ public class UserServiceImpl implements UserService {
         List<Permission> all = new ArrayList<>(); // 水平的菜单树
         for (Integer permissionId : rolePermissions) {
             permissionList.stream().filter(permission -> permission.getId().equals(permissionId))
-                    .findFirst().ifPresent(all::add);
+                .findFirst().ifPresent(all::add);
         }
         return all;
     }
@@ -181,11 +183,11 @@ public class UserServiceImpl implements UserService {
     private List<Permission> getTreePermissions(List<Permission> all) {
         // 菜单树 1级 -> 2级
         List<Permission> parentList = all.stream().filter(permission -> permission.getType() == 1)
-                .collect(Collectors.toList());// type == 1是目录
+            .collect(Collectors.toList());// type == 1是目录
         for (Permission permission : parentList) {
             Integer pid = permission.getId();
             List<Permission> level2List = all.stream().filter(permission1 -> pid.equals(permission1.getPid()))
-                    .collect(Collectors.toList());// 2级菜单
+                .collect(Collectors.toList());// 2级菜单
             permission.setChildren(level2List);
         }
         return parentList;
@@ -202,12 +204,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Long count() {
+        return userRepository.count();
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     @Override
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
@@ -237,13 +244,47 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> selectPage(String username, String email, String address, Integer deleted, Pageable pageable) {
-        return userRepository.selectPage(username, email, address, deleted, pageable);
+    public User partialUpdate(User user) {
+        Optional<User> optionalUser = userRepository.findById(user.getId());
+
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        User existingUser = optionalUser.get();
+        existingUser.updateFields(user);
+        return userRepository.save(existingUser);
     }
+
+    @Override
+    public void updateAvatar(User user) {
+        Optional<User> opt = userRepository.findById(user.getId());
+        if (opt.isEmpty()) {
+            throw new ServiceException("The user is not found");
+        }
+        opt.get().setAvatar(user.getAvatar());
+        userRepository.save(opt.get());
+    }
+
+    @Override
+    public Page<User> findAllPage(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<User> findByConditionsWithPagination(String searchContent, Pageable pageable) {
+        return userRepository.findByConditionsWithPagination(searchContent, pageable);
+    }
+
+    @Override
+    public Page<User> findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(
+        String username, String email, String address, Integer deleted, Pageable pageable) {
+        return userRepository.findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(
+            username, email, address, deleted, pageable);
+    }
+
 
     @Override
     public Long selectTotal(String username, String email, String address, Integer deleted) {
         return userRepository.countByConditions(username, email, address, deleted);
     }
-
 }

@@ -15,9 +15,11 @@ public interface UserService {
 
     List<User> findAll();
 
+    Long count();
+
     Optional<User> findByEmail(String email);
 
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
 
     Optional<User> findById(Integer id);
 
@@ -27,7 +29,19 @@ public interface UserService {
 
     User update(User user);
 
-    Page<User> selectPage(String username, String email, String address, Integer deleted, Pageable pageable);
+    User partialUpdate(User user);
+
+    void updateAvatar(User user);
+
+    Page<User> findAllPage(Pageable pageable);
+
+    Page<User> findByConditionsWithPagination(String searchContent, Pageable pageable);
+
+    Page<User> findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(String username,
+                                                                                                   String email,
+                                                                                                   String address,
+                                                                                                   Integer deleted,
+                                                                                                   Pageable pageable);
 
     // 条件查询总条数
     Long selectTotal(String username, String email, String address, Integer deleted);

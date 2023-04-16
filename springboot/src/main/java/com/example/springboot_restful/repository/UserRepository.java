@@ -8,12 +8,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
 
     Optional<User> findByEmail(String email);
 
@@ -24,11 +25,18 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     void updateDeleted(Integer id);
 
     @Query("SELECT u FROM User u " +
-        "WHERE (:username IS NULL OR u.username = :username) " +
-        "AND (:email IS NULL OR u.email = :email) " +
-        "AND (:address IS NULL OR u.address = :address) " +
-        "AND (:deleted IS NULL OR u.deleted = :deleted)")
-    Page<User> selectPage(String username, String email, String address, Integer deleted, Pageable pageable);
+        "WHERE (u.username LIKE %:searchContent%) " +
+        "AND (u.email LIKE %:searchContent%) " +
+        "AND (u.address LIKE %:searchContent%) " +
+        "AND (u.deleted = 0)")
+    Page<User> findByConditionsWithPagination(String searchContent, Pageable pageable);
+
+    Page<User> findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(String username,
+                                                                                                   String email,
+                                                                                                   String address,
+                                                                                                   Integer deleted,
+                                                                                                   Pageable pageable);
+
 
     @Query("SELECT COUNT(u) FROM User u " +
         "WHERE (:username IS NULL OR u.username = :username) " +

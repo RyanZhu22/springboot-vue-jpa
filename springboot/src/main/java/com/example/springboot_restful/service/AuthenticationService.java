@@ -8,7 +8,7 @@ import com.example.springboot_restful.entity.User;
 
 public interface AuthenticationService {
 
-    RegisterResponse register(RegisterRequest request);
+    void register(RegisterRequest request);
 
     LoginResponse authenticate(LoginRequest request);
 

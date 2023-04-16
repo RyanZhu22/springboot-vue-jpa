@@ -1,7 +1,6 @@
 package com.example.springboot_restful.service.impl;
 
 import com.example.springboot_restful.entity.Files;
-import com.example.springboot_restful.exception.ServiceException;
 import com.example.springboot_restful.repository.FilesRepository;
 import com.example.springboot_restful.service.FilesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +37,14 @@ public class FilesServiceImpl implements FilesService {
     }
 
     @Override
-    public Files findByMd5(String md5) {
+    public List<Files> findByMd5(String md5) {
         return filesRepository.findByMd5(md5);
     }
 
     @Override
     public void deleteById(Integer id) {
         Optional<Files> optionalFile = filesRepository.findById(id);
-        if (!optionalFile.isPresent()) {
+        if (optionalFile.isEmpty()) {
             throw new RuntimeException("File not found with id: " + id);
         }
         Files file = optionalFile.get();

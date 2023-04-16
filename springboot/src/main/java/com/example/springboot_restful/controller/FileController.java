@@ -10,6 +10,7 @@ import com.example.springboot_restful.service.FilesService;
 import com.example.springboot_restful.service.FilesService;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ import java.util.Map;
 /**
  * 文件接口
  */
+@Slf4j
 @RestController
 @RequestMapping("/file")
 public class FileController {
@@ -64,15 +66,18 @@ public class FileController {
         // 获取MD5
         String md5 = SecureUtil.md5(uploadFile);
         // 查询数据库是否存在相同md5
-        Files dbFiles = getFileByMd5(md5);
-        if (dbFiles != null) {
-            url = dbFiles.getUrl();
-            // md5存在，删除磁盘上传文件
-            uploadFile.delete();
-        } else {
-            // 重复md5不存在 直接获取
-            url = "http://localhost:8080/file/" + fileUuid;
+        List<Files> dbFiles = filesService.findByMd5(md5);
+        if (dbFiles.size() > 1) {
+            // Delete all files except the first one
+            for (int i = 1; i < dbFiles.size(); i++) {
+                Files fileToDelete = dbFiles.get(i);
+                url = fileToDelete.getUrl();
+                // md5存在，删除磁盘上传文件
+                uploadFile.delete();
+            }
         }
+        // 重复md5不存在 直接获取
+        url = "http://localhost:8080/file/" + fileUuid;
 
 
         // 存储数据库
@@ -143,14 +148,6 @@ public class FileController {
     public ResultBody updateEnable(@RequestParam Integer id, Boolean enable) {
         filesService.updateEnable(id, enable);
         return ResultBody.success("200", "Update Successful");
-    }
-
-    /**
-     * 文件md5查询文件
-     */
-    private Files getFileByMd5(String md5) {
-        // 查询MD5是否存在
-        return filesService.findByMd5(md5);
     }
 
     /**

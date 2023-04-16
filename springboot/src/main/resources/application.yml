@@ -32,4 +32,4 @@ spring:
 
 files:
   upload:
-    path: D:/project-code/springboot/springboot-vue/springboot/files/
+    path: D:/project-code/springboot/springboot-vue(jpa)/springboot/files/

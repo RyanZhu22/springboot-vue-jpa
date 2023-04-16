@@ -5,6 +5,7 @@ import com.example.springboot_restful.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
+@DynamicUpdate
 @Table(name = "users")
 public class User implements UserDetails {
 
@@ -42,6 +44,9 @@ public class User implements UserDetails {
     @Column(name = "uid", length = 40)
     private String uid;
 
+    @Column(name = "phone", length = 40)
+    private String phone;
+
     @Column(name = "avatar", length = 255)
     private String avatar;
 
@@ -64,12 +69,23 @@ public class User implements UserDetails {
     @Column(name = "update_time")
     private LocalDateTime update_time;
 
+    @PrePersist
+    public void onCreate() {
+        create_time = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        update_time = LocalDateTime.now();
+    }
+
     public void updateFields(User updatedUser) {
         this.username = updatedUser.username;
         this.password = updatedUser.password;
         this.name = updatedUser.name;
         this.email = updatedUser.email;
         this.uid = updatedUser.uid;
+        this.phone = updatedUser.phone;
         this.avatar = updatedUser.avatar;
         this.address = updatedUser.address;
         this.role = updatedUser.role;
@@ -91,7 +107,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

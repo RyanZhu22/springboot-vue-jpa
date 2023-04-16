@@ -187,11 +187,11 @@ const load = () => {
     total.value = res.total
   }).catch(err => console.log(err))
 
-  $axios.get('/api/role').then(res => {
-    console.log(res);
-    roles.value = res.result
-    console.log(roles.value);
-  })
+  // $axios.get('/api/role').then(res => {
+  //   console.log(res);
+  //   roles.value = res.result
+  //   console.log(roles.value);
+  // })
 }
 
 const findAll = () => {

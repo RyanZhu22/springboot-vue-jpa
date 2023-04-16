@@ -17,7 +17,7 @@
                     <span>Total number of users</span>
                 </div>
                 </template>
-                <div></div>
+                <div>{{ users_number }}</div>
             </el-card>
         </el-col>
         <el-col :span="6">
@@ -27,7 +27,7 @@
                     <span>Total number of users</span>
                 </div>
                 </template>
-                <div></div>
+                <div>{{ users_number }}</div>
             </el-card>
         </el-col>
     </el-row>
@@ -37,6 +37,7 @@
   
 <script setup>
 import { ref, onMounted, onUnmounted, inject } from 'vue';
+import { useUserStore } from "../store/user"
 import * as echarts from 'echarts';
 
 const $axios = inject('$axios')
@@ -44,7 +45,7 @@ const $axios = inject('$axios')
 let echart = echarts;
 const chartRef = ref(null);
 const chartInstance = ref(null);
-const tableData = ref(null)
+const users_number = ref(null)
 
 onMounted(() => {
     findAll();
@@ -58,7 +59,7 @@ onUnmounted(() => {
 const findAll = () => {
     $axios.get('/api/user').then(res => {
         console.log(res);
-        tableData.value = res
+        users_number.value = res.result
     })
 }
 

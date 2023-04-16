@@ -18,13 +18,13 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResultBody register(@RequestBody RegisterRequest request) {
-        return ResultBody.success(service.register(request));
+        service.register(request);
+        return ResultBody.success();
     }
 
     @PostMapping("/login")
     public ResultBody login(@RequestBody LoginRequest request) {
-        LoginResponse res = service.authenticate(request);
-        return ResultBody.success(res);
+        return ResultBody.success(service.authenticate(request));
     }
 
     @PostMapping("/authenticate")

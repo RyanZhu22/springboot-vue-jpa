@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface FilesRepository extends JpaRepository<Files, Integer> {
 
-    Files findByMd5(String md5);
+    List<Files> findByMd5(String md5);
 }

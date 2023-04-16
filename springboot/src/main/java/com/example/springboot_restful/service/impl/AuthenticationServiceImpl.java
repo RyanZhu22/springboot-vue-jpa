@@ -10,17 +10,15 @@ import com.example.springboot_restful.enums.Role;
 import com.example.springboot_restful.enums.TokenType;
 import com.example.springboot_restful.exception.ServiceException;
 import com.example.springboot_restful.repository.TokenRepository;
-import com.example.springboot_restful.repository.UserRepository;
 import com.example.springboot_restful.service.AuthenticationService;
 import com.example.springboot_restful.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +30,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public RegisterResponse register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
+        if (service.findByUsername(request.getUsername()).isPresent()) {
+            throw new ServiceException("500", "The Username already exists");
+        }
+
         if (!request.getPassword().equals(request.getConfirmPwd())) {
             throw new ServiceException("500", "password is not match");
         }
@@ -42,23 +44,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .email(request.getEmail())
             .name(request.getName())
             .role(Role.USER)
+            .deleted(0)
             .build();
         User savedUser = service.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        saveUserToken(savedUser, jwtToken);
-        return RegisterResponse.builder().token(jwtToken).build();
+//        var jwtToken = jwtService.generateToken(user);
+//        saveUserToken(savedUser, jwtToken);
+//        return RegisterResponse.builder().token(jwtToken).build();
     }
 
     @Override
     public LoginResponse authenticate(LoginRequest request) {
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
+                request.getUsername(),
                 request.getPassword()
             )
         );
-        var user = service.findByEmail(request.getEmail())
+        var user = service.findByUsername(request.getUsername())
             .orElseThrow();
+        user.setUpdate_time(LocalDateTime.now()); // set update_time
+        service.save(user); // save into db
         var jwtToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken); // token

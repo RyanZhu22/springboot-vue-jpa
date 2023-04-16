@@ -1,6 +1,5 @@
 package com.example.springboot_restful.controller;
 
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
@@ -9,12 +8,11 @@ import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.service.UserService;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,68 +31,50 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping
+    public ResultBody count() {
+        Long all = userService.count();
+        return ResultBody.success(all);
+    }
 
-    @GetMapping("/id")
-    public ResultBody findOne(@RequestParam("id") Integer id) {
+    @GetMapping("/{id}")
+    public ResultBody findOne(@PathVariable(value = "id") Integer id) {
         Optional<User> user = userService.findById(id);
         return ResultBody.success(user);
     }
 
     @PostMapping("/update")
-    public ResultBody update(User user) {
+    public ResultBody update(@RequestBody User user) {
         User updateUser = userService.update(user);
-        if (updateUser == null) {
-            return ResultBody.error("500", "Internet Error");
-        }
+        return ResultBody.success(updateUser);
+    }
 
+    @PostMapping("/update/avatar")
+    public ResultBody updateAvatar(@RequestBody User user) {
+        userService.updateAvatar(user);
         return ResultBody.success();
     }
 
-    @GetMapping
-    public List<User> findAll() {
-        List<User> all = userService.findAll();
-        return all;
-    }
+//    @PatchMapping("/update/{id}")
+//    public User partialUpdate(@PathVariable Integer id, @RequestBody User user) {
+//        user.setId(id);
+//        return userService.partialUpdate(user);
+//    }
 
-    // RequestBody 将前端JSON数据转化成Java对象
+//    @GetMapping
+//    public List<User> findAll() {
+//        return userService.findAll();
+//    }
+
     @PostMapping
     public ResultBody save(@RequestBody User user) {
         userService.saveUser(user);
         return ResultBody.success();
     }
 
-    /**
-     * 注册接口
-     * @param user
-     * @return
-     */
-    @PostMapping("/register")
-    public ResultBody register(@RequestBody User user) {
-        String username = user.getUsername();
-        String password = user.getPassword();
-        // hutool校验username是否未空
-        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
-            return ResultBody.error("500", "username or password is null");
-        }
-
-        if (userService.findByUsername(user.getUsername()) == null) {
-            userService.saveUser(user);
-            return ResultBody.success();
-        } else {
-            return ResultBody.error("500", "Username already exists");
-        }
-    }
-
-    // 真删除接口
-    @DeleteMapping(value = "/{id}")
-    public ResultBody deleteByIdT(@PathVariable("id") Integer id) {
-        userService.deleteById(id);
-        return ResultBody.success();
-    }
-
-    // 假删除接口
-    @PostMapping(value = "/{id}")
-    public ResultBody deleteByIdF(@PathVariable("id") Integer id) {
+    // 删除接口
+    @PostMapping("/{id}")
+    public ResultBody updateDeleted(@PathVariable("id") Integer id) {
         userService.updateDeleted(id);
         return ResultBody.success();
     }
@@ -106,18 +86,20 @@ public class UserController {
     public Map<String, Object> findPage(@RequestParam(value = "username", required = false) String username,
                                         @RequestParam(value = "email", required = false) String email,
                                         @RequestParam(value = "address", required = false) String address,
-                                        @RequestParam(value = "deleted", required = false) Integer deleted,
                                         @RequestParam(value = "page", defaultValue = "0") int page,
-                                        @RequestParam(value = "size", defaultValue = "10") int size,
-                                        @RequestParam(value = "sort", defaultValue = "id") String sort,
-                                        @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
-        PageRequest pageable = PageRequest.of(page, size, Sort.by(direction, sort));
-        Page<User> data = userService.selectPage(username, email, address, deleted, pageable);
-        Long total = userService.selectTotal(username, email, address, deleted);
+                                        @RequestParam(value = "size", defaultValue = "10") int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+//        Page<User> data = userService.selectPage(username, email, address, deleted, pageable);
+//        Long total = userService.selectTotal(username, email, address, deleted);
+//        Map<String, Object> res = new HashMap<>();
+//        res.put("data", data);
+//        res.put("total", total);
+//        log.info(data.toString(), total);
+//        Page<User> data = userService.findByConditionsWithPagination(username, email, address, pageable);
+        Page<User> data = userService.findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(
+            username, email, address, 0, pageable);
         Map<String, Object> res = new HashMap<>();
         res.put("data", data);
-        res.put("total", total);
-        log.info(String.valueOf(pageable), data, total);
         return res;
     }
 
