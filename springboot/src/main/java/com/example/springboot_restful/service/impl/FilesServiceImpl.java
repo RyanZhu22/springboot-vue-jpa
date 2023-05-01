@@ -48,7 +48,7 @@ public class FilesServiceImpl implements FilesService {
             throw new RuntimeException("File not found with id: " + id);
         }
         Files file = optionalFile.get();
-        file.setIsDelete(true);
+        file.setDeleted(true);
         filesRepository.save(file);
     }
 
@@ -66,7 +66,7 @@ public class FilesServiceImpl implements FilesService {
             Optional<Files> optionalFile = filesRepository.findById(id);
             if (optionalFile.isPresent()) {
                 Files file = optionalFile.get();
-                file.setIsDelete(true);
+                file.setDeleted(true);
                 filesRepository.save(file);
                 deletedCount++;
             }

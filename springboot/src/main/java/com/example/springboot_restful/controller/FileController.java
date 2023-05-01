@@ -82,12 +82,12 @@ public class FileController {
 
         // 存储数据库
         Files saveFile = new Files();
-        saveFile.setFile_name(originalFilename);
-        saveFile.setFile_type(type);
-        saveFile.setFile_size(size / 1024);
+        saveFile.setFileName(originalFilename);
+        saveFile.setFileType(type);
+        saveFile.setFileSize(size / 1024);
         saveFile.setMd5(md5);
         saveFile.setUrl(url);
-        saveFile.setIsDelete(false);
+        saveFile.setDeleted(false);
         saveFile.setEnable(true);
         filesService.save(saveFile);
         return url;

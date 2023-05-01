@@ -80,12 +80,6 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.11.5</version>
 		</dependency>
-		<!-- pagination -->
-		<dependency>
-			<groupId>com.github.pagehelper</groupId>
-			<artifactId>pagehelper-spring-boot-starter</artifactId>
-			<version>1.2.12</version>
-		</dependency>
 		<!-- Redis -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

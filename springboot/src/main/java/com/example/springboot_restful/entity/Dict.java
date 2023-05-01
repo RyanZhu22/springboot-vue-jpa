@@ -17,12 +17,12 @@ public class Dict {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "name", length = 255)
+    @Column
     private String name;
 
-    @Column(name = "value", length = 255)
+    @Column
     private String value;
 
-    @Column(name = "type", length = 255)
+    @Column
     private String type;
 }

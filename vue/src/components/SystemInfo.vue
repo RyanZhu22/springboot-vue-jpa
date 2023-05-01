@@ -162,43 +162,29 @@ const roles = ref([])
 
 const handleSizeChange = val => {
   console.log(`${val} items per page`)
-  $axios.get('/api/user/page', { params: { pageNum: currentPage.value, pageSize: val, deleted: 0 } }).then(res => {
-    tableData.value = res.data
+  $axios.get('/api/user/page', { params: { page: currentPage.value, size: val, username: username.value, email: email.value, address: address.value} }).then(res => {
+    tableData.value = res.all.content
   })
   pageSize.value = val
 }
 
 const handleCurrentChange = val => {
   console.log(`current page: ${val}`)
-  $axios.get('/api/user/page', { params: { pageNum: val, pageSize: pageSize.value, deleted: 0 } }).then(res => {
-    tableData.value = res.data
+  $axios.get('/api/user/page', { params: { page: val, size: pageSize.value, username: username.value, email: email.value, address: address.value} }).then(res => {
+    tableData.value = res.all.content
   })
 }
 
 onMounted(() => {
   load();
-  // findAll();
 })
 
 const load = () => {
-  $axios.get('/api/user/page', { params: { pageNum: currentPage.value, pageSize: pageSize.value, username: username.value, email: email.value, address: address.value, deleted: 0 } }).then(res => {
+  $axios.get('/api/user/page', { params: { page: currentPage.value, size: pageSize.value, username: username.value, email: email.value, address: address.value} }).then(res => {
     console.log(res);
-    tableData.value = res.data
-    total.value = res.total
+    tableData.value = res.all.content
+    total.value = res.all.totalElements
   }).catch(err => console.log(err))
-
-  // $axios.get('/api/role').then(res => {
-  //   console.log(res);
-  //   roles.value = res.result
-  //   console.log(roles.value);
-  // })
-}
-
-const findAll = () => {
-  $axios.get('/api/user').then(res => {
-    console.log(res);
-    allTableData.value = res
-  })
 }
 
 const reset = () => {

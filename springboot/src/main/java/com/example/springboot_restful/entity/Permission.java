@@ -24,42 +24,52 @@ public class Permission {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "name", length = 255)
+    @Column
     private String name;
 
-    @Column(name = "path", length = 255)
+    @Column
     private String path;
 
-    @Column(name = "orders")
+    @Column
     private String orders;
 
-    @Column(name = "icon", length = 255)
+    @Column
     private String icon;
 
-    @Column(name = "page", length = 255)
+    @Column
     private String page;
 
-    @Column(name = "auth", length = 255)
+    @Column
     private String auth;
 
-    @Column(name = "pid")
+    @Column
     private Integer pid;
 
-    @Column(name = "type", columnDefinition = "int default 0")
+    @Column(columnDefinition = "int default 0")
     private Integer type;
 
-    @Column(name = "deleted", columnDefinition = "int default 0")
-    private Integer deleted;
+    @Column(columnDefinition = "tinyint(1) default 0")
+    private Boolean deleted;
 
-    @Column(name = "hide", columnDefinition = "tinyint default 0")
+    @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean hide;
 
-    @Column(name = "create_time")
-    private LocalDateTime create_time;
+    @Column(updatable = false)
+    private LocalDateTime createTime;
 
-    @Column(name = "update_time")
-    private LocalDateTime update_time;
+    @Column
+    private LocalDateTime updateTime;
 
     @Transient
     private List<Permission> children;
+
+    @PrePersist
+    protected void onCreate() {
+        createTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updateTime = LocalDateTime.now();
+    }
 }

@@ -44,7 +44,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .email(request.getEmail())
             .name(request.getName())
             .role(Role.USER)
-            .deleted(0)
+            .deleted(false)
             .build();
         User savedUser = service.save(user);
 //        var jwtToken = jwtService.generateToken(user);
@@ -62,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
         var user = service.findByUsername(request.getUsername())
             .orElseThrow();
-        user.setUpdate_time(LocalDateTime.now()); // set update_time
+        user.setUpdateTime(LocalDateTime.now()); // set update_time
         service.save(user); // save into db
         var jwtToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);

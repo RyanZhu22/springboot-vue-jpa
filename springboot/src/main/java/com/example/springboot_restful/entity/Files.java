@@ -17,24 +17,24 @@ public class Files {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "file_name", length = 255)
-    private String file_name;
+    @Column(name = "file_name")
+    private String fileName;
 
-    @Column(name = "file_type", length = 255)
-    private String file_type;
+    @Column(name = "file_type")
+    private String fileType;
 
     @Column(name = "file_size")
-    private Long file_size;
+    private Long fileSize;
 
-    @Column(name = "url", length = 255)
+    @Column
     private String url;
 
-    @Column(name = "md5", length = 255)
+    @Column
     private String md5;
 
-    @Column(name = "is_delete", columnDefinition = "tinyint(1) unsigned zerofill")
-    private Boolean isDelete;
+    @Column(columnDefinition = "tinyint(1) default 0")
+    private Boolean deleted;
 
-    @Column(name = "enable", columnDefinition = "tinyint(1) unsigned zerofill")
+    @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean enable;
 }
