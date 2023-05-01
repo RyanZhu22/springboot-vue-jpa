@@ -1,6 +1,7 @@
 package com.example.springboot_restful.repository;
 
 import com.example.springboot_restful.entity.User;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,22 +22,27 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByUid(String uid);
 
     @Modifying
-    @Query("UPDATE User u SET u.deleted = 1 WHERE u.id = :id")
+    @Query("UPDATE User u SET u.deleted = true WHERE u.id = :id")
     void updateDeleted(Integer id);
 
     @Query("SELECT u FROM User u " +
-        "WHERE (u.username LIKE %:searchContent%) " +
-        "AND (u.email LIKE %:searchContent%) " +
-        "AND (u.address LIKE %:searchContent%) " +
-        "AND (u.deleted = 0)")
-    Page<User> findByConditionsWithPagination(String searchContent, Pageable pageable);
+        "WHERE (u.username LIKE CONCAT('%',:username,'%')) " +
+        "AND (u.email LIKE CONCAT('%',:email,'%')) " +
+        "AND (u.address LIKE CONCAT('%',:address,'%')) " +
+        "AND (u.deleted = false)")
+    List<User> findByConditions(@Param("username") String username,
+                                @Param("email") String email,
+                                @Param("address") String address);
 
-    Page<User> findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(String username,
-                                                                                                   String email,
-                                                                                                   String address,
-                                                                                                   Integer deleted,
-                                                                                                   Pageable pageable);
-
+    @Query("SELECT u FROM User u " +
+        "WHERE (u.username LIKE CONCAT('%',:username,'%')) " +
+        "AND (u.email LIKE CONCAT('%',:email,'%')) " +
+        "AND (u.address LIKE CONCAT('%',:address,'%')) " +
+        "AND (u.deleted = false)")
+    Page<User> findByConditionsWithPagination(Pageable pageable,
+                                              @Param("username") String username,
+                                              @Param("email") String email,
+                                              @Param("address") String address);
 
     @Query("SELECT COUNT(u) FROM User u " +
         "WHERE (:username IS NULL OR u.username = :username) " +

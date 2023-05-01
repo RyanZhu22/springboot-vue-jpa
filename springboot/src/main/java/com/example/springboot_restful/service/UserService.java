@@ -5,8 +5,10 @@ import com.example.springboot_restful.dto.LoginResponse;
 import com.example.springboot_restful.dto.RegisterRequest;
 import com.example.springboot_restful.dto.UserRequest;
 import com.example.springboot_restful.entity.User;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,15 +35,11 @@ public interface UserService {
 
     void updateAvatar(User user);
 
-    Page<User> findAllPage(Pageable pageable);
+    Page<User> findAll(Pageable pageable);
 
-    Page<User> findByConditionsWithPagination(String searchContent, Pageable pageable);
+    List<User> findByConditions(String username, String email, String address);
 
-    Page<User> findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(String username,
-                                                                                                   String email,
-                                                                                                   String address,
-                                                                                                   Integer deleted,
-                                                                                                   Pageable pageable);
+    Page<User> findByConditionsWithPagination(Pageable pageable, String username, String email, String address);
 
     // 条件查询总条数
     Long selectTotal(String username, String email, String address, Integer deleted);

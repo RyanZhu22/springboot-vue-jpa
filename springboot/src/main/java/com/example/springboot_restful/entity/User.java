@@ -16,9 +16,9 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 @DynamicUpdate
 @Table(name = "users")
@@ -29,54 +29,54 @@ public class User implements UserDetails {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "username", length = 255, nullable = false)
+    @Column(nullable = false)
     private String username;
 
-    @Column(name = "password", length = 255, nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "name", length = 255)
+    @Column
     private String name;
 
-    @Column(name = "email", length = 30)
+    @Column
     private String email;
 
-    @Column(name = "uid", length = 40)
+    @Column
     private String uid;
 
-    @Column(name = "phone", length = 40)
+    @Column
     private String phone;
 
-    @Column(name = "avatar", length = 255)
+    @Column
     private String avatar;
 
-    @Column(name = "address", length = 255)
+    @Column
     private String address;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Token> tokens;
 
-    @Column(name = "deleted", columnDefinition = "tinyint default 0")
-    private Integer deleted;
+    @Column(columnDefinition = "tinyint(1) default 0")
+    private Boolean deleted;
 
-    @Column(name = "create_time")
-    private LocalDateTime create_time;
+    @Column(updatable = false)
+    private LocalDateTime createTime;
 
-    @Column(name = "update_time")
-    private LocalDateTime update_time;
+    @Column
+    private LocalDateTime updateTime;
 
     @PrePersist
-    public void onCreate() {
-        create_time = LocalDateTime.now();
+    protected void onCreate() {
+        createTime = LocalDateTime.now();
     }
 
     @PreUpdate
-    public void onUpdate() {
-        update_time = LocalDateTime.now();
+    protected void onUpdate() {
+        updateTime = LocalDateTime.now();
     }
 
     public void updateFields(User updatedUser) {
@@ -90,8 +90,8 @@ public class User implements UserDetails {
         this.address = updatedUser.address;
         this.role = updatedUser.role;
         this.deleted = updatedUser.deleted;
-        this.create_time = updatedUser.create_time;
-        this.update_time = updatedUser.update_time;
+        this.createTime = updatedUser.createTime;
+        this.updateTime = updatedUser.updateTime;
     }
 
     // implements UserDetails

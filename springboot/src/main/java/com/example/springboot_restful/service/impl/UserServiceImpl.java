@@ -18,8 +18,7 @@ import com.example.springboot_restful.service.UserService;
 import com.example.springboot_restful.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +51,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse getUserMenusAndAuths(User user) {
         // 查询用户的菜单树（2层）
-        String flag = String.valueOf(user.getRole());
+        String flag = user.getRole().name();
         List<Permission> all = getPermissions(flag); // 水平
         // 页面菜单权限
         List<Permission> menus = getTreePermissions(all); // 树形
@@ -229,7 +228,6 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    @Transactional
     @Override
     public void updateDeleted(Integer id) {
         userRepository.updateDeleted(id);
@@ -266,20 +264,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> findAllPage(Pageable pageable) {
+    public Page<User> findAll(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
 
+    @Transactional
     @Override
-    public Page<User> findByConditionsWithPagination(String searchContent, Pageable pageable) {
-        return userRepository.findByConditionsWithPagination(searchContent, pageable);
+    public List<User> findByConditions(String username, String email, String address) {
+        return userRepository.findByConditions(username, email, address);
     }
 
     @Override
-    public Page<User> findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(
-        String username, String email, String address, Integer deleted, Pageable pageable) {
-        return userRepository.findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(
-            username, email, address, deleted, pageable);
+    public Page<User> findByConditionsWithPagination(Pageable pageable, String username, String email, String address) {
+        return userRepository.findByConditionsWithPagination(pageable, username, email, address);
     }
 
 

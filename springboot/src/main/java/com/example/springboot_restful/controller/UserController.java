@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,26 +79,16 @@ public class UserController {
     }
 
     // 分页查询接口
-    // 接口路径： /user/page?pageNum=1&pageSize=10
-    // LIMIT (pageNum - 1) * pageSize
     @GetMapping("/page")
     public Map<String, Object> findPage(@RequestParam(value = "username", required = false) String username,
                                         @RequestParam(value = "email", required = false) String email,
                                         @RequestParam(value = "address", required = false) String address,
-                                        @RequestParam(value = "page", defaultValue = "0") int page,
-                                        @RequestParam(value = "size", defaultValue = "10") int size) {
-        PageRequest pageable = PageRequest.of(page, size);
-//        Page<User> data = userService.selectPage(username, email, address, deleted, pageable);
-//        Long total = userService.selectTotal(username, email, address, deleted);
-//        Map<String, Object> res = new HashMap<>();
-//        res.put("data", data);
-//        res.put("total", total);
-//        log.info(data.toString(), total);
-//        Page<User> data = userService.findByConditionsWithPagination(username, email, address, pageable);
-        Page<User> data = userService.findAllByUsernameContainingOrEmailContainingOrAddressContainingAndDeletedContaining(
-            username, email, address, 0, pageable);
+                                        @RequestParam(value = "page", defaultValue = "1") int page,
+                                        @RequestParam(value = "size", defaultValue = "5") int size) {
+        PageRequest pageable = PageRequest.of(page - 1, size);
+        Page<User> all = userService.findByConditionsWithPagination(pageable, username, email, address);
         Map<String, Object> res = new HashMap<>();
-        res.put("data", data);
+        res.put("all", all);
         return res;
     }
 
