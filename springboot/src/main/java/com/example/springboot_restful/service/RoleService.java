@@ -1,19 +1,21 @@
 package com.example.springboot_restful.service;
 
 import com.example.springboot_restful.entity.Role;
-import com.example.springboot_restful.entity.RolePermission;
+import io.lettuce.core.dynamic.annotation.Param;
 
-import java.rmi.ServerException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface RoleService {
 
-    Role save(Role role);
+    void save(Role role);
 
     void deleteById(Integer id);
 
-    Role findById(Integer id);
+    void updateDeletedById(Integer id);
+
+    Optional<Role> findById(Integer id);
 
     Map<String, Object> findPage(String name, Integer pageNum, Integer pageSize);
 
@@ -23,5 +25,5 @@ public interface RoleService {
 
     Role findByFlag(String flag);
 
-    void savePermissions(Integer roleId, List<Integer> permissionIds) throws ServerException;
+    void savePermissions(Integer roleId, List<Integer> permissionIds);
 }

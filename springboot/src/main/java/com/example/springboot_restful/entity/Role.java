@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -21,21 +23,31 @@ public class Role {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "name", length = 50)
+    @Column
     private String name;
 
-    @Column(name = "flag", length = 255)
+    @Column
     private String flag;
 
-    @Column(name = "deleted", columnDefinition = "int default 0")
-    private Integer deleted;
+    @Column(columnDefinition = "tinyint(1) default 0")
+    private Boolean deleted;
 
-    @Column(name = "create_time")
+    @Column(updatable = false)
     private LocalDateTime createTime;
 
-    @Column(name = "update_time")
+    @Column
     private LocalDateTime updateTime;
 
     @Transient
     private List<Integer> permissionIds;
+
+    @PrePersist
+    protected void onCreate() {
+        createTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updateTime = LocalDateTime.now();
+    }
 }

@@ -1,40 +1,37 @@
 package com.example.springboot_restful.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import com.example.springboot_restful.entity.Permission;
 import com.example.springboot_restful.entity.Role;
 import com.example.springboot_restful.entity.RolePermission;
+import com.example.springboot_restful.exception.ServiceException;
 import com.example.springboot_restful.repository.RoleRepository;
 import com.example.springboot_restful.service.RolePermissionService;
 import com.example.springboot_restful.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.rmi.ServerException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
     private final RolePermissionService rolePermissionService;
 
-    @Autowired
-    public RoleServiceImpl(RoleRepository roleRepository, RolePermissionService rolePermissionService) {
-        this.roleRepository = roleRepository;
-        this.rolePermissionService = rolePermissionService;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
-    public Role save(Role role) {
-        return roleRepository.save(role);
+    public void save(Role role) {
+        roleRepository.save(role);
     }
 
     @Override
@@ -43,14 +40,41 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role findById(Integer id) {
-        Optional<Role> optionalRole = roleRepository.findById(id);
-        return optionalRole.orElseThrow(() -> new RuntimeException("Role not found with id: " + id));
+    public void updateDeletedById(Integer id) {
+        roleRepository.updateDeletedById(id);
+    }
+
+    @Override
+    public Optional<Role> findById(Integer id) {
+        Optional<Role> opt = roleRepository.findById(id);
+        if (opt.isEmpty()) {
+            throw new ServiceException("The role is not found");
+        }
+        return opt;
     }
 
     @Override
     public List<Role> findAll() {
-        return roleRepository.findAll();
+        List<Role> roleList = roleRepository.findAll();
+        List<RolePermission> rolePermissionList = rolePermissionService.findAll();
+        List<RolePermission> filteredRolePermission = new ArrayList<>();
+        List<Integer> permissionIds = new ArrayList<>();
+        // for each role list
+        roleList.forEach(v -> {
+            for (RolePermission rolePermission : rolePermissionList) {
+                if (rolePermission.getRoleId().equals(v.getId())) {
+                    filteredRolePermission.add(rolePermission);
+                }
+            }
+            System.out.println(filteredRolePermission);
+            for (RolePermission rolePermission : filteredRolePermission) {
+                permissionIds.add(rolePermission.getPermissionId());
+            }
+            System.out.println(filteredRolePermission);
+            System.out.println(permissionIds);
+            v.setPermissionIds(permissionIds);
+        });
+        return roleList;
     }
 
     @Override
@@ -60,10 +84,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Map<String, Object> findPage(String name, Integer pageNum, Integer pageSize) {
-        Long total = this.count();
+        Long total = roleRepository.count();
         Page<Role> page = roleRepository.findAll(PageRequest.of(pageNum, pageSize));
         List<Role> roleList = page.getContent();
-
         List<RolePermission> rolePermissionList = rolePermissionService.findAll();
         // for each role list
         roleList.forEach(v -> {
@@ -86,13 +109,18 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional
     @Override
-    public void savePermissions(Integer roleId, List<Integer> permissionIds) throws ServerException {
+    public void savePermissions(Integer roleId, List<Integer> permissionIds) {
         // check if the data is empty
-        if (CollUtil.isEmpty(permissionIds) || roleId == null) {
-            throw new ServerException("数据不能为空");
+        if (permissionIds == null || roleId == null) {
+            throw new RuntimeException("数据不能为空");
         }
+
         // delete all relationship between role and permission according to roleId
         rolePermissionService.deleteByRoleId(roleId);
+
+        // Ensure that the delete operation is completed before proceeding to the next step
+        entityManager.flush();
+
         // insert relationship data from front-end
         permissionIds.forEach(v -> {
             RolePermission rolePermission = new RolePermission();

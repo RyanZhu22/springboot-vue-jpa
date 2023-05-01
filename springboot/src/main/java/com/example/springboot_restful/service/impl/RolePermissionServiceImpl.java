@@ -21,8 +21,8 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     @Override
-    public RolePermission save(RolePermission rolePermission) {
-        return rolePermissionRepository.save(rolePermission);
+    public void save(RolePermission rolePermission) {
+        rolePermissionRepository.save(rolePermission);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
 
     @Transactional
     @Override
-    public List<RolePermission> setRoleMenu(Integer roleId, List<Integer> permissionIds) {
+    public List<RolePermission> setRolePermission(Integer roleId, List<Integer> permissionIds) {
         // 先删除当前角色id所有绑定关系
         rolePermissionRepository.deleteByRoleId(roleId);
 
@@ -55,7 +55,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     @Override
-    public List<RolePermission> findRoleMenu(Integer permissionId) {
+    public List<RolePermission> findRolePermission(Integer permissionId) {
         return rolePermissionRepository.findByPermissionId(permissionId);
     }
 
