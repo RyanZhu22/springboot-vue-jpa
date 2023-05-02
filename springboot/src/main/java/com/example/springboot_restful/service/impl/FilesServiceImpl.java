@@ -75,9 +75,7 @@ public class FilesServiceImpl implements FilesService {
     }
 
     @Override
-    public Files updateEnable(Integer id, Boolean enable) {
-        Files file = filesRepository.findById(id).orElseThrow(() -> new RuntimeException("File not found with id: " + id));
-        file.setEnable(enable);
-        return filesRepository.save(file);
+    public void updateEnable(Integer id, Boolean enable) {
+        filesRepository.updateEnable(id, enable);
     }
 }

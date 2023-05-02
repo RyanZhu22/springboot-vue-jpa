@@ -29,8 +29,8 @@ public class Role {
     @Column
     private String flag;
 
-    @Column(columnDefinition = "tinyint(1) default 0")
-    private Boolean deleted;
+    @Column(name = "deleted", columnDefinition = "tinyint(1) default 0", nullable = false)
+    private Boolean deleted = false;
 
     @Column(updatable = false)
     private LocalDateTime createTime;

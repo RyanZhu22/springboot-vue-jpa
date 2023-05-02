@@ -44,11 +44,6 @@ const router = useRouter();
 const userStore = useUserStore();
 const userAvatar = ref(userStore.getUser.avatar);
 
-onMounted(() => {
-  console.log(userStore);
-  console.log(userStore.getUser.avatar);
-});
-
 const errorHandler = () => true
 
 const signOut = () => {

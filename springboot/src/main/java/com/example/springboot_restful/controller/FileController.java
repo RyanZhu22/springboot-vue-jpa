@@ -131,7 +131,7 @@ public class FileController {
     @PostMapping("/del/batch/t")
     public ResultBody deleteBatch(@RequestBody List<Integer> ids) {
         filesService.deleteBatch(ids);
-        return ResultBody.success("200", "Delete Successful");
+        return ResultBody.success();
     }
 
     /**
@@ -141,13 +141,13 @@ public class FileController {
      */
     @PostMapping("/del/batch")
     public ResultBody deleteBatchByF(@RequestBody List<Integer> ids) {
-        return ResultBody.success("200", "Delete Successful");
+        return ResultBody.success();
     }
 
     @PostMapping("/update")
-    public ResultBody updateEnable(@RequestParam Integer id, Boolean enable) {
-        filesService.updateEnable(id, enable);
-        return ResultBody.success("200", "Update Successful");
+    public ResultBody updateEnable(@RequestBody Files files) {
+        filesService.updateEnable(files.getId(), files.getEnable());
+        return ResultBody.success();
     }
 
     /**

@@ -241,7 +241,8 @@ const updateForm = () => {
 }
 
 const changeHide = (row) => {
-  $axios.put('/api/permission', row).then(res => {
+
+  $axios.post('/api/permission/hide', JSON.stringify({ id: row.id, hide: row.hide})).then(res => {
     console.log(res);
     if (res.code === '200') {
       ElMessage.success('Change Successful')

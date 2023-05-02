@@ -1,6 +1,5 @@
 package com.example.springboot_restful.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import com.example.springboot_restful.entity.Role;
 import com.example.springboot_restful.entity.RolePermission;
 import com.example.springboot_restful.exception.ServiceException;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.rmi.ServerException;
 import java.util.*;
 import java.util.stream.Collectors;
 

@@ -1,7 +1,6 @@
 package com.example.springboot_restful.service.impl;
 
 import com.example.springboot_restful.entity.Permission;
-import com.example.springboot_restful.exception.ServiceException;
 import com.example.springboot_restful.repository.PermissionRepository;
 import com.example.springboot_restful.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,22 +58,14 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public Permission updateHide(Integer id, Boolean hide) {
-        Optional<Permission> optionalPermission = permissionRepository.findById(id);
-        if (optionalPermission.isPresent()) {
-            Permission permission = optionalPermission.get();
-            permission.setHide(hide);
-            return permissionRepository.save(permission);
-        } else {
-            throw new RuntimeException("Permission not found with id: " + id);
-        }
+    public void updateHide(Integer id, Boolean hide) {
+        permissionRepository.updateHide(id, hide);
     }
 
     @Override
     public List<Permission> tree() {
-        List<Permission> allData = permissionRepository.findAll();
-
-        return childrenTree(null, allData);
+        List<Permission> all = permissionRepository.findAllByDeletedIsFalse();
+        return childrenTree(null, all);
     }
 
     @Override
@@ -88,5 +79,10 @@ public class PermissionServiceImpl implements PermissionService {
             }
         }
         return list;
+    }
+
+    @Override
+    public List<Permission> findAllByConditions() {
+        return permissionRepository.findAllByDeletedIsFalse();
     }
 }

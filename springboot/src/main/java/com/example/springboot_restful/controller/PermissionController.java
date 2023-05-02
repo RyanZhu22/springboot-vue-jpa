@@ -31,9 +31,9 @@ public class PermissionController {
         return ResultBody.success(permissionList);
     }
 
-    @PutMapping
-    public ResultBody updateHide(@RequestParam Integer id, @RequestParam Boolean hide) {
-        permissionService.updateHide(id, hide);
+    @PostMapping("/hide")
+    public ResultBody updateHide(@RequestBody Permission permission) {
+        permissionService.updateHide(permission.getId(), permission.getHide());
         return ResultBody.success();
     }
 

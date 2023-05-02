@@ -48,11 +48,11 @@ public class Permission {
     @Column(columnDefinition = "int default 0")
     private Integer type;
 
-    @Column(columnDefinition = "tinyint(1) default 0")
-    private Boolean deleted;
+    @Column(name = "deleted", columnDefinition = "tinyint(1) default 0", nullable = false)
+    private Boolean deleted = false;
 
-    @Column(columnDefinition = "tinyint(1) default 0")
-    private Boolean hide;
+    @Column(name = "hide", columnDefinition = "tinyint(1) default 0", nullable = false)
+    private Boolean hide = false;
 
     @Column(updatable = false)
     private LocalDateTime createTime;

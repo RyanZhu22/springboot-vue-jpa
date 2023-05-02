@@ -4,7 +4,6 @@ import com.example.springboot_restful.entity.Permission;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface PermissionService {
 
@@ -18,11 +17,13 @@ public interface PermissionService {
 
     Long count();
 
-    Permission updateHide(Integer id, Boolean hide);
+    void updateHide(Integer id, Boolean hide);
 
     Map<String, Object> findPage(Integer pageNum, Integer pageSize);
 
     List<Permission> tree();
 
     List<Permission> childrenTree(Integer pid, List<Permission> allData);
+
+    List<Permission> findAllByConditions();
 }

@@ -20,5 +20,5 @@ public interface FilesService {
 
     int deleteBatch(List<Integer> ids);
 
-    Files updateEnable(Integer id, Boolean enable);
+    void updateEnable(Integer id, Boolean enable);
 }

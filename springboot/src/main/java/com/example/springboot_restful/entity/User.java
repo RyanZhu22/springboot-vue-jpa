@@ -60,8 +60,8 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Token> tokens;
 
-    @Column(columnDefinition = "tinyint(1) default 0")
-    private Boolean deleted;
+    @Column(name = "deleted", columnDefinition = "tinyint(1) default 0", nullable = false)
+    private Boolean deleted = false;
 
     @Column(updatable = false)
     private LocalDateTime createTime;
