@@ -18,6 +18,6 @@ public class LoginResponse implements Serializable {
 
     private User user;
     private String token;
-    private List<Permission> menus;
+    private List<Permission> permissions;
     private List<Permission> auths;
 }

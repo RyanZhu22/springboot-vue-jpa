@@ -17,7 +17,7 @@ public interface PermissionService {
 
     Long count();
 
-    void updateHide(Integer id, Boolean hide);
+    void updateHide(Integer id);
 
     Map<String, Object> findPage(Integer pageNum, Integer pageSize);
 

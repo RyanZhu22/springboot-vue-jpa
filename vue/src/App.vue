@@ -7,7 +7,6 @@
 </script>
 
 
-
 <style scoped>
 body {
     width: 100%;

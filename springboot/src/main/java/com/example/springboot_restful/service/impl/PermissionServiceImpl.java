@@ -3,6 +3,7 @@ package com.example.springboot_restful.service.impl;
 import com.example.springboot_restful.entity.Permission;
 import com.example.springboot_restful.repository.PermissionRepository;
 import com.example.springboot_restful.service.PermissionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,14 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepository permissionRepository;
 
-    @Autowired
-    public PermissionServiceImpl(PermissionRepository permissionRepository) {
-        this.permissionRepository = permissionRepository;
-    }
 
     @Override
     public Permission save(Permission permission) {
@@ -58,8 +56,8 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public void updateHide(Integer id, Boolean hide) {
-        permissionRepository.updateHide(id, hide);
+    public void updateHide(Integer id) {
+        permissionRepository.updateHide(id);
     }
 
     @Override

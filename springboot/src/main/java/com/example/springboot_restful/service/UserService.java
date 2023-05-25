@@ -2,13 +2,10 @@ package com.example.springboot_restful.service;
 
 
 import com.example.springboot_restful.dto.LoginResponse;
-import com.example.springboot_restful.dto.RegisterRequest;
 import com.example.springboot_restful.dto.UserRequest;
 import com.example.springboot_restful.entity.User;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +44,7 @@ public interface UserService {
     // 插入（批量）
     List<User> saveBatch(List<User> list);
 
-    LoginResponse getUserMenusAndAuths(User user);
+    LoginResponse getUserPermissionsAndAuths(User user);
 
     void logout(String uid);
 

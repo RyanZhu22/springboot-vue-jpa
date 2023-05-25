@@ -3,9 +3,9 @@
         <el-col :span="6">
             <el-card class="box-card" style="color: #409EFF">
                 <template #header>
-                <div class="card-header" style="text-align: center;">
-                    <span>Total Events</span>
-                </div>
+                    <div class="card-header" style="text-align: center;">
+                        <span>Total Events</span>
+                    </div>
                 </template>
                 <div>5,585,605,181</div>
             </el-card>
@@ -13,9 +13,9 @@
         <el-col :span="6">
             <el-card class="box-card" style="color: #F56C6C">
                 <template #header>
-                <div class="card-header" style="text-align: center;">
-                    <span>Total number of users</span>
-                </div>
+                    <div class="card-header" style="text-align: center;">
+                        <span>Total number of users</span>
+                    </div>
                 </template>
                 <div>{{ users_number }}</div>
             </el-card>
@@ -23,9 +23,9 @@
         <el-col :span="6">
             <el-card class="box-card" style="color: #E6A23C">
                 <template #header>
-                <div class="card-header" style="text-align: center;">
-                    <span>Total number of users</span>
-                </div>
+                    <div class="card-header" style="text-align: center;">
+                        <span>Total number of users</span>
+                    </div>
                 </template>
                 <div>{{ users_number }}</div>
             </el-card>
@@ -34,10 +34,9 @@
 
     <div id="chart" ref="chart"></div>
 </template>
-  
+
 <script setup>
-import { ref, onMounted, onUnmounted, inject } from 'vue';
-import { useUserStore } from "../store/user"
+import {inject, onMounted, onUnmounted, ref} from 'vue';
 import * as echarts from 'echarts';
 
 const $axios = inject('$axios')
@@ -68,14 +67,14 @@ const initChart = () => {
     // configure and render your chart
 
     myChart.setOption({
-    
+
         title: {
             text: 'Activity levels of popular topics'
         },
         tooltip: {
             trigger: 'axis',
             axisPointer: {
-            type: 'shadow'
+                type: 'shadow'
             }
         },
         legend: {},
@@ -95,9 +94,9 @@ const initChart = () => {
         },
         series: [
             {
-            name: '2022',
-            type: 'bar',
-            data: [29.13, 31.94, 60.18, 63.85, 76.3]
+                name: '2022',
+                type: 'bar',
+                data: [29.13, 31.94, 60.18, 63.85, 76.3]
             },
         ]
     });
@@ -106,10 +105,10 @@ const initChart = () => {
 
 
 </script>
-  
+
 <style scoped>
 #chart {
-  width: 600px;
-  height: 400px;
+    width: 600px;
+    height: 400px;
 }
 </style>

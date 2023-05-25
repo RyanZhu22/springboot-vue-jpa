@@ -14,8 +14,8 @@ public interface PermissionRepository extends JpaRepository<Permission, Integer>
 
     @Modifying
     @Transactional
-    @Query("UPDATE Permission p SET p.hide = :hide WHERE p.id = :id")
-    void updateHide(Integer id, Boolean hide);
+    @Query("UPDATE Permission p SET p.hide = true WHERE p.id = :id")
+    void updateHide(Integer id);
 
     @Query("SELECT p FROM Permission p WHERE p.deleted = false AND p.hide = false")
     List<Permission> findAllByConditions();

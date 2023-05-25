@@ -2,7 +2,6 @@ package com.example.springboot_restful.service.impl;
 
 import com.example.springboot_restful.dto.LoginRequest;
 import com.example.springboot_restful.dto.LoginResponse;
-import com.example.springboot_restful.dto.RegisterResponse;
 import com.example.springboot_restful.dto.RegisterRequest;
 import com.example.springboot_restful.entity.Token;
 import com.example.springboot_restful.entity.User;
@@ -67,11 +66,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken); // token
-        LoginResponse response = service.getUserMenusAndAuths(user);
+        LoginResponse response = service.getUserPermissionsAndAuths(user);
         return LoginResponse.builder()
             .user(response.getUser())
             .token(jwtToken)
-            .menus(response.getMenus())
+            .permissions(response.getPermissions())
             .auths(response.getAuths())
             .build();
     }

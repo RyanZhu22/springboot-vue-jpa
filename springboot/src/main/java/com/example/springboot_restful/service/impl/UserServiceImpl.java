@@ -38,30 +38,6 @@ public class UserServiceImpl implements UserService {
     private final RolePermissionService rolePermissionService;
     private final RoleService roleService;
     private final PermissionService permissionService;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-
-
-    /**
-     * 登录业务逻辑
-     *
-     * @param user
-     * @return
-     */
-    @Override
-    public LoginResponse getUserMenusAndAuths(User user) {
-        // 查询用户的菜单树（2层）
-        String flag = user.getRole().name();
-        List<Permission> all = getPermissions(flag); // 水平
-        // 页面菜单权限
-        List<Permission> menus = getTreePermissions(all); // 树形
-        // 页面按钮权限
-        List<Permission> auths = all.stream().filter(permission -> permission.getType() == 3)
-            .collect(Collectors.toList());
-        // 返回登录数据
-        return LoginResponse.builder().user(user).menus(menus).auths(auths).build();
-    }
-
 
     @Override
     public void logout(String uid) {
@@ -178,22 +154,19 @@ public class UserServiceImpl implements UserService {
         return all;
     }
 
-    // 获取角色对应的菜单树
-    private List<Permission> getTreePermissions(List<Permission> all) {
-        // 菜单树 1级 -> 2级
-        List<Permission> parentList = all.stream().filter(permission -> permission.getType() == 1)
-            .collect(Collectors.toList());// type == 1是目录
-        for (Permission permission : parentList) {
-            Integer pid = permission.getId();
-            List<Permission> level2List = all.stream().filter(permission1 -> pid.equals(permission1.getPid()))
-                .collect(Collectors.toList());// 2级菜单
-            permission.setChildren(level2List);
-        }
-        return parentList;
-    }
 
     public List<User> saveBatch(List<User> users) {
         return userRepository.saveAll(users);
+    }
+
+    @Override
+    public LoginResponse getUserPermissionsAndAuths(User user) {
+        // get permissions
+        List<Permission> permissions = getPermissions(String.valueOf(user.getRole()));
+        // get auths
+        // 页面的按钮权限集合
+        List<Permission> auths = permissions.stream().filter(permission -> permission.getType() == 3).toList();
+        return LoginResponse.builder().user(user).permissions(permissions).auths(auths).build();
     }
 
 

@@ -48,10 +48,10 @@ public class Permission {
     @Column(columnDefinition = "int default 0")
     private Integer type;
 
-    @Column(name = "deleted", columnDefinition = "tinyint(1) default 0", nullable = false)
+    @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean deleted = false;
 
-    @Column(name = "hide", columnDefinition = "tinyint(1) default 0", nullable = false)
+    @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean hide = false;
 
     @Column(updatable = false)

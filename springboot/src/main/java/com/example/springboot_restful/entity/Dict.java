@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "dict")
+@Table(name = "dict",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"code", "deleted"}))
 public class Dict {
 
     @Id
@@ -17,12 +18,15 @@ public class Dict {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column
-    private String name;
+    @Column(name = "code")
+    private String code;
 
-    @Column
+    @Column(name = "value")
     private String value;
 
-    @Column
+    @Column(name = "type")
     private String type;
+
+    @Column(name = "deleted", columnDefinition = "tinyint(1) default 0", nullable = false)
+    private Boolean deleted = false;
 }

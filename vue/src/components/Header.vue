@@ -11,13 +11,12 @@
     </el-breadcrumb>
 
     <!-- right -->
-    <div>
+    <div style="display: flex;justify-content: center;align-items: center;">
       <!-- avatar img -->
       <el-avatar :size="40" src="https://empty" @error="errorHandler">
         <img :src="userAvatar" />
       </el-avatar>
-
-      <el-dropdown style="margin-right: 3rem">
+      <el-dropdown style="margin-right: 3rem;">
         <el-button type="primary">
           {{ userStore.getUser.name }}
           <el-icon class="el-icon--right"><arrow-down /></el-icon>
@@ -47,8 +46,8 @@ const userAvatar = ref(userStore.getUser.avatar);
 const errorHandler = () => true
 
 const signOut = () => {
-  ElMessage.success("Logout Successfully");
   userStore.logout();
+  ElMessage.success("Logout Successfully");
   router.push("/login");
 };
 </script>

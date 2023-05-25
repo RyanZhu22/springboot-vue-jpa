@@ -1,6 +1,7 @@
 package com.example.springboot_restful.controller;
 
 import com.example.springboot_restful.common.ResultBody;
+import com.example.springboot_restful.entity.Dict;
 import com.example.springboot_restful.entity.Permission;
 import com.example.springboot_restful.service.DictService;
 import com.example.springboot_restful.service.PermissionService;
@@ -31,12 +32,6 @@ public class PermissionController {
         return ResultBody.success(permissionList);
     }
 
-    @PostMapping("/hide")
-    public ResultBody updateHide(@RequestBody Permission permission) {
-        permissionService.updateHide(permission.getId(), permission.getHide());
-        return ResultBody.success();
-    }
-
     @PostMapping
     public ResultBody saveOrUpdate(@RequestBody Permission Permission) {
         permissionService.save(Permission);
@@ -57,7 +52,9 @@ public class PermissionController {
 
     @GetMapping("/icons")
     public ResultBody getIcons() {
-        return ResultBody.success(dictService.findIcon());
+        List<Dict> icons = dictService.findIcons();
+        System.out.println(icons);
+        return ResultBody.success(icons);
     }
 
 }

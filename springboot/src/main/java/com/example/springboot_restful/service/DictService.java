@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface DictService {
 
-    List<Dict> findIcon();
+    List<Dict> findIcons();
 }
