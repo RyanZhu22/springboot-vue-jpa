@@ -1,0 +1,1 @@
+INSERT INTO `file` (`id`, `file_name`, `file_size`, `file_type`, `md5`, `url`, `enable`, `deleted`) VALUES (14, 'download.jpg', 8, 'jpg', '7f6539e53f15fc25cd769ec1cafae9d5', 'http://localhost:8080/file/22a3914f81c343199e1ce1471946ac4c.jpg', 1, 0);
