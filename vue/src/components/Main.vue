@@ -1,5 +1,5 @@
 <template>
-    <router-view></router-view>
+  <router-view></router-view>
 </template>
 
 <script setup>
@@ -7,6 +7,6 @@
 
 <style>
 .el-main {
-    position: relative;
+  position: relative;
 }
 </style>

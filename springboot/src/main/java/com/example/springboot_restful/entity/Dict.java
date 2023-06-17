@@ -1,13 +1,10 @@
 package com.example.springboot_restful.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "dict",
         uniqueConstraints = @UniqueConstraint(columnNames = {"code", "deleted"}))
@@ -23,6 +20,7 @@ public class Dict {
 
     @Column(name = "value")
     private String value;
+
 
     @Column(name = "type")
     private String type;

@@ -9,6 +9,8 @@ public interface PermissionService {
 
     Permission save(Permission permission);
 
+    Permission update(Permission permission);
+
     void deleteById(Integer id);
 
     Permission findById(Integer id);
@@ -17,13 +19,9 @@ public interface PermissionService {
 
     Long count();
 
-    void updateHide(Integer id);
-
-    Map<String, Object> findPage(Integer pageNum, Integer pageSize);
-
     List<Permission> tree();
 
     List<Permission> childrenTree(Integer pid, List<Permission> allData);
 
-    List<Permission> findAllByConditions();
+    boolean updateHide(Integer id, boolean hide);
 }

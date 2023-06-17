@@ -6,11 +6,15 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.example.springboot_restful.common.ResultBody;
 import com.example.springboot_restful.entity.Files;
+import com.example.springboot_restful.model.dto.files.FilesUpdateDto;
+import com.example.springboot_restful.model.page.FilePage;
 import com.example.springboot_restful.service.FilesService;
 import com.example.springboot_restful.service.FilesService;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -88,7 +92,7 @@ public class FileController {
         saveFile.setMd5(md5);
         saveFile.setUrl(url);
         saveFile.setDeleted(false);
-        saveFile.setEnable(true);
+        saveFile.setHide(true);
         filesService.save(saveFile);
         return url;
     }
@@ -124,18 +128,7 @@ public class FileController {
     }
 
     /**
-     * 真 批量删除文件接口
-     * @param ids
-     * @return
-     */
-    @PostMapping("/del/batch/t")
-    public ResultBody deleteBatch(@RequestBody List<Integer> ids) {
-        filesService.deleteBatch(ids);
-        return ResultBody.success();
-    }
-
-    /**
-     * 假 批量删除文件接口
+     * 批量删除文件接口
      * @param ids
      * @return
      */
@@ -145,26 +138,23 @@ public class FileController {
     }
 
     @PostMapping("/update")
-    public ResultBody updateEnable(@RequestBody Files files) {
-        filesService.updateEnable(files.getId(), files.getEnable());
+    public ResultBody updateEnable(@Valid @RequestBody FilesUpdateDto filesUpdateDto) {
+        filesService.updateEnable(filesUpdateDto.getId(), filesUpdateDto.getHide());
         return ResultBody.success();
     }
 
     /**
      * 文件分页查询接口
-     * @param pageNum
-     * @param pageSize
+     *
+     * @param filePage
      * @return
      */
     @GetMapping("/page")
-    public ResultBody findPage(@RequestParam("pageNum") Integer pageNum,
-                               @RequestParam("pageSize") Integer pageSize) {
+    public ResultBody findPage(FilePage filePage) {
         // 查询所有数据
         Long total = filesService.count();
-        // pageNum从0开始数
-        pageNum = pageNum -1;
         // 查询相关页数的数据
-        List<Files> filesList = filesService.findPage(pageNum, pageSize);
+        List<Files> filesList = filesService.findPage(filePage.getPage() -1, filePage.getSize());
         // map格式放回数据
         Map<String, Object> res = new HashMap<>();
         res.put("total", total);

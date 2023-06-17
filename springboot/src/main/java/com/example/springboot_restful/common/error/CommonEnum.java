@@ -1,37 +1,35 @@
 package com.example.springboot_restful.common.error;
 
 /**
- * 普通错误枚举类
+ * common error enum class
  */
 public enum CommonEnum implements BaseErrorInfoInterface {
-    SUCCESS("200", "成功"),
-    BODY_NOT_MATCH("400", "请求的数据格式不符"),
-    SIGNATURE_NOT_MATCH("401", "请求的数字签名不匹配!"),
-    OT_FOUND("404", "未找到该资源!"),
-    INTERNAL_SERVER_ERROR("500", "服务器内部错误!"),
-    SERVER_BUSY("503", "服务器正忙，请稍后再试!"),
-    OTHER_SERVICE_ERROR("600", "其他业务异常"),
-    NULLPOINTER_ERROR("1001","空指针异常");
+    SUCCESS(200, "Success"),
+    PARAMS_ERROR(40000, "Request parameter error"),
+    SIGNATURE_NOT_MATCH(40100, "Digital signature doesn't match!"),
+    NOT_FOUND(40400, "Resource not found!"),
+    INTERNAL_SERVER_ERROR(50000, "Internal server error!"),
+    SERVER_BUSY(50300, "Server is busy, please try again later!"),
+    OTHER_SERVICE_ERROR(60000, "Other business exception"),
+    NULLPOINTER_ERROR(100100,"Null pointer exception");
 
 
-    //错误码
-    private String resultCode;
+    private final int code;
+    private final String message;
 
-    //描述信息
-    private String resultMsg;
-
-    CommonEnum(String resultCode, String resultMsg) {
-        this.resultCode = resultCode;
-        this.resultMsg = resultMsg;
+    CommonEnum(int code, String message) {
+        this.code = code;
+        this.message = message;
     }
 
+
     @Override
-    public String getResultCode() {
-        return resultCode;
+    public int getResultCode() {
+        return code;
     }
 
     @Override
     public String getResultMsg() {
-        return resultMsg;
+        return message;
     }
 }

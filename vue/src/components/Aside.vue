@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { useUserStore } from "../store/user";
+import {useUserStore} from "../store/user";
 
 // 实例化 store
 const userStore = useUserStore();

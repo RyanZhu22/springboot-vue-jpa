@@ -1,25 +1,34 @@
 package com.example.springboot_restful.service.impl;
 
+import com.example.springboot_restful.common.error.ResultEnum;
 import com.example.springboot_restful.entity.Permission;
+import com.example.springboot_restful.exception.BusinessException;
 import com.example.springboot_restful.repository.PermissionRepository;
 import com.example.springboot_restful.service.PermissionService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class PermissionServiceImpl implements PermissionService {
 
-    private final PermissionRepository permissionRepository;
+    @Autowired
+    private PermissionRepository permissionRepository;
 
 
     @Override
     public Permission save(Permission permission) {
+        return permissionRepository.save(permission);
+    }
+
+    @Override
+    public Permission update(Permission permission) {
+        // check if the permission existed
+        this.findById(permission.getId());
         return permissionRepository.save(permission);
     }
 
@@ -30,19 +39,11 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public Permission findById(Integer id) {
-        Optional<Permission> optionalPermission = permissionRepository.findById(id);
-        return optionalPermission.orElseThrow(() -> new RuntimeException("Permission not found with id: " + id));
-    }
-
-    @Override
-    public Map<String, Object> findPage(Integer pageNum, Integer pageSize) {
-        Long total = this.count();
-        Page<Permission> page = permissionRepository.findAll(PageRequest.of(pageNum, pageSize));
-        List<Permission> permissionList = page.getContent();
-        Map<String, Object> res = new HashMap<>();
-        res.put("total", total);
-        res.put("data", permissionList);
-        return res;
+        Optional<Permission> optPermission = permissionRepository.findById(id);
+        if (optPermission.isEmpty()) {
+            throw new BusinessException(ResultEnum.NOT_EXIST);
+        }
+        return optPermission.get();
     }
 
     @Override
@@ -55,10 +56,6 @@ public class PermissionServiceImpl implements PermissionService {
         return permissionRepository.count();
     }
 
-    @Override
-    public void updateHide(Integer id) {
-        permissionRepository.updateHide(id);
-    }
 
     @Override
     public List<Permission> tree() {
@@ -80,7 +77,13 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public List<Permission> findAllByConditions() {
-        return permissionRepository.findAllByDeletedIsFalse();
+    public boolean updateHide(Integer id, boolean hide) {
+        Permission dbPermission = this.findById(id);
+        if (dbPermission == null) {
+            return false;
+        }
+        dbPermission.setHide(hide);
+        this.save(dbPermission);
+        return true;
     }
 }

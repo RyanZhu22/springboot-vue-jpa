@@ -1,8 +1,8 @@
 // 1. 引入
 import axios from "axios";
-import { ElMessage } from "element-plus";
+import {ElMessage} from "element-plus";
 import router from "../router";
-import { useUserStore } from "../store/user";
+import {useUserStore} from "../store/user";
 
 // Request
 axios.interceptors.request.use(
@@ -31,8 +31,8 @@ axios.interceptors.response.use(
     }
     // 权限不通过弹出提示
     if (res.code === "401") {
-        ElMessage.error(res.msg)
-        router.push('/login')
+      ElMessage.error(res.msg)
+      router.push('/login')
     }
     return res;
   },

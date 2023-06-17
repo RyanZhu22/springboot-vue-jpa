@@ -1,5 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router";
-import { useUserStore } from "../store/user";
+import {createRouter, createWebHistory} from "vue-router";
+import {useUserStore} from "../store/user";
+
 const views = import.meta.glob("../views/*.vue");
 
 const router = createRouter({
@@ -15,11 +16,6 @@ const router = createRouter({
       path: "/login",
       name: "Login",
       component: () => import("../views/Login.vue"),
-    },
-    {
-      path: "/register",
-      name: "Register",
-      component: () => import("../views/Register.vue"),
     },
     {
       path: "/404",

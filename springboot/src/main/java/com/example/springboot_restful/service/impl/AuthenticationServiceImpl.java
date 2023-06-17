@@ -62,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var user = service.findByUsername(request.getUsername())
             .orElseThrow();
         user.setUpdateTime(LocalDateTime.now()); // set update_time
-        service.save(user); // save into db
+        service.save(user); // create into db
         var jwtToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken); // token

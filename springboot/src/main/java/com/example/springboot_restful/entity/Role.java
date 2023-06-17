@@ -11,8 +11,6 @@ import java.util.List;
 
 @Data
 @DynamicUpdate
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "role",
     uniqueConstraints = @UniqueConstraint(columnNames = {"flag", "deleted"}, name = "flag_deleted_index"))

@@ -16,6 +16,6 @@ public interface FilesRepository extends JpaRepository<Files, Integer> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Files f SET f.enable = :enable WHERE f.id = :id")
-    void updateEnable(Integer id, Boolean enable);
+    @Query("UPDATE Files f SET f.hide = :hide WHERE f.id = :id")
+    void updateEnable(Integer id, Boolean hide);
 }

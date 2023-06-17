@@ -1,13 +1,10 @@
 package com.example.springboot_restful.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "file")
 public class Files {
@@ -36,5 +33,5 @@ public class Files {
     private Boolean deleted = false;
 
     @Column(columnDefinition = "tinyint(1) default 0")
-    private Boolean enable;
+    private Boolean hide;
 }

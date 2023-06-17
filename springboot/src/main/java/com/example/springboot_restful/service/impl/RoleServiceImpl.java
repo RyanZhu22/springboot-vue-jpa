@@ -2,6 +2,7 @@ package com.example.springboot_restful.service.impl;
 
 import com.example.springboot_restful.entity.Role;
 import com.example.springboot_restful.entity.RolePermission;
+import com.example.springboot_restful.entity.User;
 import com.example.springboot_restful.exception.ServiceException;
 import com.example.springboot_restful.repository.RoleRepository;
 import com.example.springboot_restful.service.RolePermissionService;
@@ -11,6 +12,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,6 +100,11 @@ public class RoleServiceImpl implements RoleService {
         res.put("total", total);
         res.put("data", roleList);
         return res;
+    }
+
+    @Override
+    public Page<Role> findByConditionsWithPagination(Pageable pageable, String name) {
+        return roleRepository.findByConditionsWithPagination(pageable, name);
     }
 
     @Override

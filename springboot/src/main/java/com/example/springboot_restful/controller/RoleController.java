@@ -3,16 +3,18 @@ package com.example.springboot_restful.controller;
 import com.example.springboot_restful.common.ResultBody;
 import com.example.springboot_restful.entity.Role;
 import com.example.springboot_restful.entity.RolePermission;
+import com.example.springboot_restful.entity.User;
+import com.example.springboot_restful.model.page.RolePage;
 import com.example.springboot_restful.service.RolePermissionService;
 import com.example.springboot_restful.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.rmi.ServerException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/role")
@@ -38,9 +40,9 @@ public class RoleController {
 
     @PostMapping
     public ResultBody saveOrUpdate(@RequestBody Role role) {
-        // save or update role
+        // create or update role
         roleService.save(role);
-        // save the relationship between role and permission
+        // create the relationship between role and permission
         roleService.savePermissions(role.getId(), role.getPermissionIds());
         return ResultBody.success();
     }
@@ -63,11 +65,10 @@ public class RoleController {
     }
 
     @GetMapping("/page")
-    public ResultBody findPage(@RequestParam(required = false) String name,
-                               @RequestParam Integer pageNum,
-                               @RequestParam Integer pageSize) {
-        Map<String, Object> res = roleService.findPage(name, pageNum - 1, pageSize);
-        return ResultBody.success(res);
+    public ResultBody findPage(RolePage rolePage) {
+        PageRequest pageable = PageRequest.of(rolePage.getPage() - 1, rolePage.getSize());
+        Page<Role> data = roleService.findByConditionsWithPagination(pageable, rolePage.getName());
+        return ResultBody.success(data);
     }
 
     @PostMapping("/rolePermission/{roleId}")

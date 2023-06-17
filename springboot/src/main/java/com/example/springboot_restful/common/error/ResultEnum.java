@@ -9,22 +9,23 @@ public enum ResultEnum implements BaseErrorInfoInterface {
     NEED_LOGIN(-1, "Not logged in"),
     REPEAT_REGISTER(-2, "This user is registered"),
     USER_NOT_EXIST(-3, "The user does not exist"),
+    NOT_EXIST(-7, "Database cannot query data by parameters"),
     PASSWORD_ERROR(-4, "Password error"),
     EMPTY_USERNAME(-5, "Username is empty"),
     EMPTY_PASSWORD(-6, "Password is empty"),
-    SUCCESS(0, "success"),
+    SUCCESS(200, "success"),
     SYSTEM_ERROR(500,"Multiple clicks");
 
-    private Integer code;
+    private int code;
 
     private String msg;
 
-    private ResultEnum(Integer code, String msg) {
+    private ResultEnum(int code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    public Integer getCode() {
+    public int getCode() {
         return code;
     }
 
@@ -33,12 +34,12 @@ public enum ResultEnum implements BaseErrorInfoInterface {
     }
 
     @Override
-    public String getResultCode() {
-        return null;
+    public int getResultCode() {
+        return code;
     }
 
     @Override
     public String getResultMsg() {
-        return null;
+        return msg;
     }
 }

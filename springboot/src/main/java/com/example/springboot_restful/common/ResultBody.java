@@ -2,6 +2,7 @@ package com.example.springboot_restful.common;
 
 import com.example.springboot_restful.common.error.BaseErrorInfoInterface;
 import com.example.springboot_restful.common.error.CommonEnum;
+import com.example.springboot_restful.common.error.ResultEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ public class ResultBody extends Throwable {
     /**
      * 响应码
      */
-    private String code;
+    private int code;
     /**
      * 响应消息
      */
@@ -38,7 +39,7 @@ public class ResultBody extends Throwable {
      * @return ResultBody
      */
     public static ResultBody success() {
-        ResultBody resultBody = new ResultBody(CommonEnum.SUCCESS);
+        ResultBody resultBody = new ResultBody(ResultEnum.SUCCESS);
         return resultBody;
     }
 
@@ -48,7 +49,7 @@ public class ResultBody extends Throwable {
      * @param message
      * @return
      */
-    public static ResultBody success(String code,String message){
+    public static ResultBody success(int code,String message){
         ResultBody resultBody = new ResultBody();
         resultBody.setCode(code);
         resultBody.setMessage(message);
@@ -84,7 +85,7 @@ public class ResultBody extends Throwable {
      * @param message 描述信息
      * @return xyz.changlu.util.ResultBody
      */
-    public static ResultBody error(String code,String message){
+    public static ResultBody error(int code,String message){
         ResultBody resultBody = new ResultBody();
         resultBody.setCode(code);
         resultBody.setMessage(message);

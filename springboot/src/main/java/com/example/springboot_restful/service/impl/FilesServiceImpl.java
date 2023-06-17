@@ -75,7 +75,7 @@ public class FilesServiceImpl implements FilesService {
     }
 
     @Override
-    public void updateEnable(Integer id, Boolean enable) {
-        filesRepository.updateEnable(id, enable);
+    public void updateEnable(Integer id, Boolean hide) {
+        filesRepository.updateEnable(id, hide);
     }
 }

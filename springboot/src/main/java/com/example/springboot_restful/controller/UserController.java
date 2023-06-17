@@ -4,7 +4,10 @@ import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.example.springboot_restful.common.ResultBody;
+import com.example.springboot_restful.entity.Role;
 import com.example.springboot_restful.entity.User;
+import com.example.springboot_restful.model.page.UserPage;
+import com.example.springboot_restful.model.page.UserPage;
 import com.example.springboot_restful.service.UserService;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,17 +57,6 @@ public class UserController {
         return ResultBody.success();
     }
 
-//    @PatchMapping("/update/{id}")
-//    public User partialUpdate(@PathVariable Integer id, @RequestBody User user) {
-//        user.setId(id);
-//        return userService.partialUpdate(user);
-//    }
-
-//    @GetMapping
-//    public List<User> findAll() {
-//        return userService.findAll();
-//    }
-
     @PostMapping
     public ResultBody save(@RequestBody User user) {
         userService.saveUser(user);
@@ -80,16 +72,11 @@ public class UserController {
 
     // 分页查询接口
     @GetMapping("/page")
-    public Map<String, Object> findPage(@RequestParam(value = "username", required = false) String username,
-                                        @RequestParam(value = "email", required = false) String email,
-                                        @RequestParam(value = "address", required = false) String address,
-                                        @RequestParam(value = "page", defaultValue = "1") int page,
-                                        @RequestParam(value = "size", defaultValue = "5") int size) {
-        PageRequest pageable = PageRequest.of(page - 1, size);
-        Page<User> all = userService.findByConditionsWithPagination(pageable, username, email, address);
-        Map<String, Object> res = new HashMap<>();
-        res.put("all", all);
-        return res;
+    public ResultBody findPage(UserPage userPage) {
+        PageRequest pageable = PageRequest.of(userPage.getPage() - 1, userPage.getSize());
+        Page<User> data = userService.findByConditionsWithPagination(
+            pageable, userPage.getUsername(), userPage.getEmail(), userPage.getAddress());
+        return ResultBody.success(data);
     }
 
     // 导出接口 Excel poi工具
@@ -125,6 +112,7 @@ public class UserController {
 
     /**
      * excel 导入
+     *
      * @param file
      * @throws Exception
      */

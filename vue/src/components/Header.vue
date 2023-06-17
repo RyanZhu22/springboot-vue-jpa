@@ -3,10 +3,12 @@
     <!-- breadcrumb -->
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/' }" style="font-size: 20px"
-        >home</el-breadcrumb-item
+      >home
+      </el-breadcrumb-item
       >
       <el-breadcrumb-item :to="{ path: '/' }" style="font-size: 20px">
-        promotion management</el-breadcrumb-item
+        promotion management
+      </el-breadcrumb-item
       >
     </el-breadcrumb>
 
@@ -14,12 +16,14 @@
     <div style="display: flex;justify-content: center;align-items: center;">
       <!-- avatar img -->
       <el-avatar :size="40" src="https://empty" @error="errorHandler">
-        <img :src="userAvatar" />
+        <img :src="userAvatar"/>
       </el-avatar>
       <el-dropdown style="margin-right: 3rem;">
         <el-button type="primary">
           {{ userStore.getUser.name }}
-          <el-icon class="el-icon--right"><arrow-down /></el-icon>
+          <el-icon class="el-icon--right">
+            <arrow-down/>
+          </el-icon>
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
@@ -33,11 +37,11 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import { useUserStore } from "../store/user";
-import { ArrowDown } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+import {onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
+import {useUserStore} from "../store/user";
+import {ArrowDown} from "@element-plus/icons-vue";
+import {ElMessage} from "element-plus";
 
 const router = useRouter();
 const userStore = useUserStore();

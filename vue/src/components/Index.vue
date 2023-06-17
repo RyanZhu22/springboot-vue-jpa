@@ -2,14 +2,14 @@
   <div class="common-layout">
     <el-container>
       <el-aside width="12rem">
-        <Aside />
+        <Aside/>
       </el-aside>
       <el-container>
         <el-header>
-          <Header />
+          <Header/>
         </el-header>
         <el-main>
-          <Main />
+          <Main/>
         </el-main>
       </el-container>
     </el-container>

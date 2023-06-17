@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         String newPwd = "123";
         // set new password to dbUser
 //        .setPassword(BCrypt.hashpw(newPwd));
-        // save into database
+        // create into database
         try {
             update(dbUser);
         } catch (Exception e) {

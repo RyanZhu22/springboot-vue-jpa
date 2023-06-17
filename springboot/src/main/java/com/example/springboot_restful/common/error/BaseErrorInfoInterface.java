@@ -9,7 +9,7 @@ public interface BaseErrorInfoInterface {
      * @date 2021/07/22 17:04
      * @return java.lang.String
      */
-    String getResultCode();
+    int getResultCode();
 
     /**
      * 得到错误信息
